@@ -7,26 +7,18 @@ import {
   YAxis,
 } from "recharts"
 
-const data = [
-  { day: "Mon", score: 72 },
-  { day: "Tue", score: 85 },
-  { day: "Wed", score: 64 },
-  { day: "Thu", score: 91 },
-  { day: "Fri", score: 78 },
-  { day: "Sat", score: 88 },
-  { day: "Sun", score: 78 },
-]
+import type { DayScore } from "@/lib/analytics"
 
-function WeeklyProgress() {
+function WeeklyProgress({ data }: { data: DayScore[] }) {
   return (
-    <div className="rounded-2xl border border-[#2B213A] bg-[#14101D] p-6">
-      <div className="flex items-start justify-between">
+    <section className="rounded-2xl border border-[#2B213A] bg-[#14101D] p-6">
+      <div className="flex items-start justify-between gap-4">
         <div>
           <p className="text-sm font-medium text-[#9A91AA]">
             Weekly progress
           </p>
           <p className="mt-1 text-xs text-[#6F687A]">
-            Your daily productivity score
+            Scores from saved habit logs
           </p>
         </div>
 
@@ -39,38 +31,24 @@ function WeeklyProgress() {
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={data}>
             <defs>
-              <linearGradient
-                id="scoreGradient"
-                x1="0"
-                y1="0"
-                x2="0"
-                y2="1"
-              >
-                <stop
-                  offset="0%"
-                  stopColor="#9B6CFF"
-                  stopOpacity={0.35}
-                />
-                <stop
-                  offset="100%"
-                  stopColor="#9B6CFF"
-                  stopOpacity={0}
-                />
+              <linearGradient id="scoreGradient" x1="0" x2="0" y1="0" y2="1">
+                <stop offset="0%" stopColor="#9B6CFF" stopOpacity={0.35} />
+                <stop offset="100%" stopColor="#9B6CFF" stopOpacity={0} />
               </linearGradient>
             </defs>
 
             <XAxis
-              dataKey="day"
               axisLine={false}
-              tickLine={false}
+              dataKey="label"
               tick={{ fill: "#777080", fontSize: 12 }}
+              tickLine={false}
             />
 
             <YAxis
-              domain={[0, 100]}
               axisLine={false}
-              tickLine={false}
+              domain={[0, 100]}
               tick={{ fill: "#777080", fontSize: 12 }}
+              tickLine={false}
               width={30}
             />
 
@@ -81,19 +59,24 @@ function WeeklyProgress() {
                 borderRadius: "10px",
                 color: "#F4F0FF",
               }}
+              formatter={(value, name, entry) => [
+                `${value}% (${entry.payload.earned}/${entry.payload.possible})`,
+                name,
+              ]}
+              labelStyle={{ color: "#C7A6FF" }}
             />
 
             <Area
-              type="monotone"
               dataKey="score"
+              fill="url(#scoreGradient)"
               stroke="#9B6CFF"
               strokeWidth={2}
-              fill="url(#scoreGradient)"
+              type="monotone"
             />
           </AreaChart>
         </ResponsiveContainer>
       </div>
-    </div>
+    </section>
   )
 }
 

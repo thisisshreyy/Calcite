@@ -1,127 +1,92 @@
+import type { ReactNode } from "react"
 import {
-  LayoutDashboard,
-  CalendarDays,
   BarChart3,
+  CalendarDays,
   CheckSquare,
   FileText,
+  LayoutDashboard,
   Quote,
+  Sparkles,
   Settings as SettingsIcon,
 } from "lucide-react"
-import { useNavigate } from "react-router-dom"
+import { NavLink } from "react-router-dom"
+
+import { useCalcite } from "@/state/CalciteStore"
+
+const navItemClass = ({ isActive }: { isActive: boolean }) =>
+  [
+    "flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors",
+    isActive
+      ? "bg-[#21172F] text-[#F4F0FF]"
+      : "text-[#9A91AA] hover:bg-[#18121F] hover:text-[#F4F0FF]",
+  ].join(" ")
 
 function Sidebar() {
-  const navigate = useNavigate()
+  const { state } = useCalcite()
 
   return (
     <aside className="hidden h-screen w-64 flex-col border-r border-[#2B213A] bg-[#0F0B17] p-5 md:flex">
-
-      {/* Brand */}
       <div className="mb-10 flex items-center gap-2">
-        <span className="text-2xl text-[#C7A6FF]">✦</span>
+        <span className="flex h-8 w-8 items-center justify-center rounded-lg border border-[#2B213A] bg-[#18121F] text-[#C7A6FF]">
+          <Sparkles size={17} />
+        </span>
 
         <span className="text-lg font-semibold tracking-wide text-[#F4F0FF]">
           CALCITE
         </span>
       </div>
 
-      {/* Main */}
       <nav className="space-y-2">
-        <SidebarItem
-          icon={<LayoutDashboard size={18} />}
-          label="Dashboard"
-          onClick={() => navigate("/")}
-        />
-
-        <SidebarItem
-          icon={<CalendarDays size={18} />}
-          label="Today"
-          onClick={() => navigate("/today")}
-        />
-
-        <SidebarItem
-          icon={<BarChart3 size={18} />}
-          label="Analytics"
-          onClick={() => navigate("/analytics")}
-        />
+        <SidebarItem icon={<LayoutDashboard size={18} />} label="Dashboard" to="/" />
+        <SidebarItem icon={<CalendarDays size={18} />} label="Today" to="/today" />
+        <SidebarItem icon={<BarChart3 size={18} />} label="Analytics" to="/analytics" />
       </nav>
 
-      {/* Tasks */}
-      <div className="mt-8">
+      <div className="mt-8 min-h-0">
         <p className="mb-3 px-3 text-xs font-medium uppercase tracking-wider text-[#777080]">
           Tasks
         </p>
 
-        <nav className="space-y-1">
-          <SidebarItem
-            icon={<CheckSquare size={17} />}
-            label="College"
-            onClick={() => navigate("/tasks/college")}
-          />
-
-          <SidebarItem
-            icon={<CheckSquare size={17} />}
-            label="Projects"
-            onClick={() => navigate("/tasks/projects")}
-          />
-
-          <SidebarItem
-            icon={<CheckSquare size={17} />}
-            label="Personal"
-            onClick={() => navigate("/tasks/personal")}
-          />
+        <nav className="max-h-56 space-y-1 overflow-y-auto pr-1">
+          {state.taskFolders.map((folder) => (
+            <SidebarItem
+              key={folder.id}
+              icon={<CheckSquare size={17} />}
+              label={folder.name}
+              to={`/tasks/${folder.slug}`}
+            />
+          ))}
         </nav>
       </div>
 
-      {/* Notes */}
       <div className="mt-8">
         <p className="mb-3 px-3 text-xs font-medium uppercase tracking-wider text-[#777080]">
           Notes
         </p>
 
-        <SidebarItem
-          icon={<FileText size={17} />}
-          label="Everything"
-          onClick={() => navigate("/notes")}
-        />
+        <SidebarItem icon={<FileText size={17} />} label="Everything" to="/notes" />
       </div>
 
-      {/* Bottom */}
       <div className="mt-auto space-y-1">
-        <SidebarItem
-          icon={<Quote size={17} />}
-          label="Quotes"
-          onClick={() => navigate("/quotes")}
-        />
-
-        <SidebarItem
-          icon={<SettingsIcon size={17} />}
-          label="Settings"
-          onClick={() => navigate("/settings")}
-        />
+        <SidebarItem icon={<Quote size={17} />} label="Quotes" to="/quotes" />
+        <SidebarItem icon={<SettingsIcon size={17} />} label="Settings" to="/settings" />
       </div>
     </aside>
   )
 }
 
 type SidebarItemProps = {
-  icon: React.ReactNode
+  icon: ReactNode
   label: string
-  onClick: () => void
+  to: string
 }
 
-function SidebarItem({
-  icon,
-  label,
-  onClick,
-}: SidebarItemProps) {
+function SidebarItem({ icon, label, to }: SidebarItemProps) {
   return (
-    <button
-      onClick={onClick}
-      className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-[#9A91AA] transition-colors hover:bg-[#18121F] hover:text-[#F4F0FF]"
-    >
+    <NavLink className={navItemClass} end={to === "/"} to={to}>
       {icon}
       <span>{label}</span>
-    </button>
+    </NavLink>
   )
 }
 
