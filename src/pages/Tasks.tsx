@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 import { useEffect, useMemo, useState, type FormEvent } from "react"
 import {
   Check,
@@ -91,7 +92,7 @@ useEffect(() => {
   if (!editingTaskId) {
     setTaskForm(emptyTaskForm(currentFolder.id))
   }
-  // eslint-disable-next-line react-hooks/set-state-in-effect
+ 
 }, [currentFolder, editingTaskId])
 
   const folderTasks = useMemo(() => {
