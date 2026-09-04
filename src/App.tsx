@@ -10,6 +10,7 @@ import Analytics from "./pages/Analytics"
 import Tasks from "./pages/Tasks"
 import Notes from "./pages/Notes"
 import Quotes from "./pages/Quotes"
+import Expenses from "./pages/Expenses"
 import Settings from "./pages/Settings"
 
 function App() {
@@ -23,11 +24,10 @@ function App() {
             <Route path="/" element={<Dashboard />} />
             <Route path="/today" element={<Today />} />
             <Route path="/analytics" element={<Analytics />} />
-
             <Route path="/tasks/:folder" element={<Tasks />} />
-
             <Route path="/notes" element={<Notes />} />
             <Route path="/quotes" element={<Quotes />} />
+            <Route path="/expenses" element={<Expenses />} />
             <Route path="/settings" element={<Settings />} />
           </Routes>
 

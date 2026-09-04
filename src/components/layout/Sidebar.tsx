@@ -1,93 +1,162 @@
-import type { ReactNode } from "react"
 import {
   BarChart3,
   CalendarDays,
   CheckSquare,
+  CircleDollarSign,
   FileText,
-  LayoutDashboard,
-  Quote,
-  Sparkles,
-  Settings as SettingsIcon,
+LayoutDashboard,
+  MessageSquareQuote,
+  Settings,
 } from "lucide-react"
 import { NavLink } from "react-router-dom"
 
-import { useCalcite } from "@/state/CalciteStore"
-
-const navItemClass = ({ isActive }: { isActive: boolean }) =>
-  [
-    "flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors",
-    isActive
-      ? "bg-[#21172F] text-[#F4F0FF]"
-      : "text-[#9A91AA] hover:bg-[#18121F] hover:text-[#F4F0FF]",
-  ].join(" ")
+import { useCalcite } from "../../state/CalciteStore"
 
 function Sidebar() {
   const { state } = useCalcite()
 
+  const navItems = [
+    {
+      label: "Dashboard",
+      to: "/",
+      icon: LayoutDashboard,
+    },
+    {
+      label: "Today",
+      to: "/today",
+      icon: CalendarDays,
+    },
+    {
+      label: "Analytics",
+      to: "/analytics",
+      icon: BarChart3,
+    },
+    {
+      label: "Expenses",
+      to: "/expenses",
+      icon: CircleDollarSign,
+    },
+  ]
+
   return (
-    <aside className="hidden h-screen w-64 flex-col border-r border-[#2B213A] bg-[#0F0B17] p-5 md:flex">
-      <div className="mb-10 flex items-center gap-2">
-        <span className="flex h-8 w-8 items-center justify-center rounded-lg border border-[#2B213A] bg-[#18121F] text-[#C7A6FF]">
-          <Sparkles size={17} />
-        </span>
+    <aside className="hidden h-screen w-[280px] shrink-0 border-r border-[#2B213A] bg-[#0D0A14] md:flex md:flex-col">
+      <div className="flex items-center gap-3 px-7 py-7">
+        <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-[#3A2B50] bg-[#171021] text-[#C7A6FF]">
+          ?
+        </div>
 
         <span className="text-lg font-semibold tracking-wide text-[#F4F0FF]">
           CALCITE
         </span>
       </div>
 
-      <nav className="space-y-2">
-        <SidebarItem icon={<LayoutDashboard size={18} />} label="Dashboard" to="/" />
-        <SidebarItem icon={<CalendarDays size={18} />} label="Today" to="/today" />
-        <SidebarItem icon={<BarChart3 size={18} />} label="Analytics" to="/analytics" />
-      </nav>
+      <div className="flex-1 overflow-y-auto px-4 pb-6">
+        <nav className="space-y-1">
+          {navItems.map((item) => {
+            const Icon = item.icon
 
-      <div className="mt-8 min-h-0">
-        <p className="mb-3 px-3 text-xs font-medium uppercase tracking-wider text-[#777080]">
-          Tasks
-        </p>
-
-        <nav className="max-h-56 space-y-1 overflow-y-auto pr-1">
-          {state.taskFolders.map((folder) => (
-            <SidebarItem
-              key={folder.id}
-              icon={<CheckSquare size={17} />}
-              label={folder.name}
-              to={`/tasks/${folder.slug}`}
-            />
-          ))}
+            return (
+              <NavLink
+                key={item.to}
+                to={item.to}
+                end={item.to === "/"}
+                className={({ isActive }) =>
+                  `flex items-center gap-3 rounded-xl px-4 py-3 text-sm transition ${
+                    isActive
+                      ? "bg-[#21172F] text-[#F4F0FF]"
+                      : "text-[#9A91AA] hover:bg-[#17121F] hover:text-[#F4F0FF]"
+                  }`
+                }
+              >
+                <Icon size={18} strokeWidth={1.8} />
+                <span>{item.label}</span>
+              </NavLink>
+            )
+          })}
         </nav>
+
+        <div className="mt-8">
+          <p className="px-4 text-xs font-medium uppercase tracking-wider text-[#777080]">
+            Tasks
+          </p>
+
+          <nav className="mt-3 space-y-1">
+            {state.taskFolders.map((folder) => (
+              <NavLink
+                key={folder.id}
+                to={`/tasks/${folder.slug}`}
+                className={({ isActive }) =>
+                  `flex items-center gap-3 rounded-xl px-4 py-3 text-sm transition ${
+                    isActive
+                      ? "bg-[#21172F] text-[#F4F0FF]"
+                      : "text-[#9A91AA] hover:bg-[#17121F] hover:text-[#F4F0FF]"
+                  }`
+                }
+              >
+                <CheckSquare size={18} strokeWidth={1.8} />
+                <span className="truncate">{folder.name}</span>
+              </NavLink>
+            ))}
+          </nav>
+        </div>
+
+        <div className="mt-8">
+          <p className="px-4 text-xs font-medium uppercase tracking-wider text-[#777080]">
+            Notes
+          </p>
+
+          <nav className="mt-3">
+            <NavLink
+              to="/notes"
+              className={({ isActive }) =>
+                `flex items-center gap-3 rounded-xl px-4 py-3 text-sm transition ${
+                  isActive
+                    ? "bg-[#21172F] text-[#F4F0FF]"
+                    : "text-[#9A91AA] hover:bg-[#17121F] hover:text-[#F4F0FF]"
+                }`
+              }
+            >
+              <FileText size={18} strokeWidth={1.8} />
+              <span>Everything</span>
+            </NavLink>
+          </nav>
+        </div>
       </div>
 
-      <div className="mt-8">
-        <p className="mb-3 px-3 text-xs font-medium uppercase tracking-wider text-[#777080]">
-          Notes
-        </p>
+      <div className="border-t border-[#21192C] px-4 py-4">
+        <nav className="space-y-1">
+          <NavLink
+            to="/quotes"
+            className={({ isActive }) =>
+              `flex items-center gap-3 rounded-xl px-4 py-3 text-sm transition ${
+                isActive
+                  ? "bg-[#21172F] text-[#F4F0FF]"
+                  : "text-[#9A91AA] hover:bg-[#17121F] hover:text-[#F4F0FF]"
+              }`
+            }
+          >
+            <MessageSquareQuote size={18} strokeWidth={1.8} />
+            <span>Quotes</span>
+          </NavLink>
 
-        <SidebarItem icon={<FileText size={17} />} label="Everything" to="/notes" />
-      </div>
-
-      <div className="mt-auto space-y-1">
-        <SidebarItem icon={<Quote size={17} />} label="Quotes" to="/quotes" />
-        <SidebarItem icon={<SettingsIcon size={17} />} label="Settings" to="/settings" />
+          <NavLink
+            to="/settings"
+            className={({ isActive }) =>
+              `flex items-center gap-3 rounded-xl px-4 py-3 text-sm transition ${
+                isActive
+                  ? "bg-[#21172F] text-[#F4F0FF]"
+                  : "text-[#9A91AA] hover:bg-[#17121F] hover:text-[#F4F0FF]"
+              }`
+            }
+          >
+            <Settings size={18} strokeWidth={1.8} />
+            <span>Settings</span>
+          </NavLink>
+        </nav>
       </div>
     </aside>
   )
 }
 
-type SidebarItemProps = {
-  icon: ReactNode
-  label: string
-  to: string
-}
-
-function SidebarItem({ icon, label, to }: SidebarItemProps) {
-  return (
-    <NavLink className={navItemClass} end={to === "/"} to={to}>
-      {icon}
-      <span>{label}</span>
-    </NavLink>
-  )
-}
-
 export default Sidebar
+
