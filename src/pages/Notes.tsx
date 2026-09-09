@@ -475,15 +475,7 @@ function Notes() {
                           {note.title || "Untitled note"}
                         </p>
                         <p className="mt-1 line-clamp-2 text-xs leading-5 text-[#777080]">
-                          {note.content
-                            .replaceAll("#", "")
-                            .replaceAll("*", "")
-                            .replaceAll("`", "")
-                            .replaceAll(">", "")
-                            .replaceAll("[", "")
-                            .replaceAll("]", "")
-                            .replaceAll("-", "")
-                            .slice(0, 100)}
+                          {note.content.replace(/[#*_`>\-\[\]]/g, "").slice(0, 100)}
                         </p>
                       </div>
                     </div>
