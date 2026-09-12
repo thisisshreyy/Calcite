@@ -5,6 +5,7 @@ import { VitePWA } from "vite-plugin-pwa"
 import tailwindcss from "@tailwindcss/vite"
 
 export default defineConfig({
+  base: "/Calcite/",
   plugins: [
     react(),
     tailwindcss(),
@@ -19,8 +20,8 @@ export default defineConfig({
         theme_color: "#0B0812",
         background_color: "#0B0812",
         display: "standalone",
-        start_url: "/",
-        scope: "/",
+        start_url: "/Calcite/",
+        scope: "/Calcite/",
         icons: [
           {
             src: "/pwa-192.svg",
