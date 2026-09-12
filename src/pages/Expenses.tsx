@@ -184,7 +184,7 @@ function Expenses() {
   }, [expenses])
 
   const formatMoney = (value: number) =>
-    `?${value.toLocaleString("en-IN", {
+    `₹${value.toLocaleString("en-IN", {
       maximumFractionDigits: 0,
     })}`
 
