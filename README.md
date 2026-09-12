@@ -1,78 +1,45 @@
-# React + TypeScript + Vite
+# Calcite
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Calcite is a local-first personal productivity workspace for today, tasks, habits, notes, expenses, analytics and saved quotes.
 
-Currently, two official plugins are available:
+## V1 features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- Dashboard with daily score, weekly habit progress, tasks and quote
+- Today view for daily habits, due tasks and overdue tasks
+- Task lists/folders with priorities, due dates, editing and completion
+- Habit tracking with daily/weekday/custom recurrence and points
+- Notes with folders and Markdown preview
+- Expense tracker with INR totals, categories and editable amount presets
+- Analytics for habit performance and trends
+- Quote library with dashboard quote rotation
+- Settings with JSON export/import and local reset
+- Responsive mobile UI
+- Installable PWA support
 
-## React Compiler
+## Tech
 
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
+React 19 + TypeScript + Vite + Tailwind CSS v4 + React Router + Recharts + Framer Motion + Lucide + vite-plugin-pwa.
 
-Note: This will impact Vite dev & build performances.
-You can also try [the experimental native React Compiler support in plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md#rust-react-compiler) by using `compiler: true` in the plugin options instead of using the Babel plugin.
+## Data model
 
-## Expanding the ESLint configuration
+V1 is intentionally local-first. Productivity data is stored in browser localStorage, so Calcite works without a backend or account and remains usable offline after installation. Use Settings → Export backup before clearing browser data or moving devices.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+Cloud sync/authentication can be added as a V2 without changing the core UI.
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Run locally
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
+```bash
+npm install
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://npmx.dev/package/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://npmx.dev/package/eslint-plugin-react-dom) for React-specific lint rules:
+Production check:
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
+```bash
+npm run lint
+npm run build
 ```
+
+## Install on phone
+
+Open the deployed Calcite URL in Chrome/Edge on Android and choose Install app / Add to Home screen. On iOS, use Safari → Share → Add to Home Screen.
