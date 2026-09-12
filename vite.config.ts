@@ -21,12 +21,12 @@ export default defineConfig({
         scope: "/",
         icons: [
           {
-            src: "/pwa-192.png",
+            src: "/pwa-192.svg",
             sizes: "192x192",
-            type: "image/png",
+            type: "image/svg+xml",
           },
           {
-            src: "/pwa-512.png",
+            src: "/pwa-512.svg",
             sizes: "512x512",
             type: "image/png",
           },
