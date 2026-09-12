@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom"
+import { HashRouter, Routes, Route } from "react-router-dom"
 
 import MobileNav from "./components/layout/MobileNav"
 import Sidebar from "./components/layout/Sidebar"
@@ -16,7 +16,7 @@ import Settings from "./pages/Settings"
 function App() {
   return (
     <CalciteProvider>
-      <BrowserRouter>
+      <HashRouter>
         <div className="flex min-h-screen bg-[#0B0812] pb-20 text-[#F4F0FF] md:pb-0">
           <Sidebar />
 
@@ -33,7 +33,7 @@ function App() {
 
           <MobileNav />
         </div>
-      </BrowserRouter>
+      </HashRouter>
     </CalciteProvider>
   )
 }
