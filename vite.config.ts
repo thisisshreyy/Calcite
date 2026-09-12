@@ -2,10 +2,12 @@ import { defineConfig } from "vite"
 import react from "@vitejs/plugin-react"
 import path from "path"
 import { VitePWA } from "vite-plugin-pwa"
+import tailwindcss from "@tailwindcss/vite"
 
 export default defineConfig({
   plugins: [
     react(),
+    tailwindcss(),
     VitePWA({
       registerType: "autoUpdate",
       includeAssets: ["favicon.svg"],
@@ -28,7 +30,7 @@ export default defineConfig({
           {
             src: "/pwa-512.svg",
             sizes: "512x512",
-            type: "image/png",
+            type: "image/svg+xml",
           },
         ],
       },
