@@ -6,6 +6,7 @@ import {
   PlayCircle,
   Plus,
   Save,
+  Trash2,
   X,
 } from "lucide-react"
 
@@ -324,6 +325,19 @@ function HabitsCard() {
                 >
                   {habit.active ? <PauseCircle size={14} /> : <PlayCircle size={14} />}
                   {habit.active ? "Pause" : "Reactivate"}
+                </button>
+                <button
+                  aria-label={"Delete " + habit.name}
+                  className={buttonClass}
+                  onClick={() => {
+                    if (window.confirm('Delete "' + habit.name + '"? This also removes its habit history.')) {
+                      dispatch({ type: "habit/delete", id: habit.id })
+                    }
+                  }}
+                  type="button"
+                >
+                  <Trash2 size={14} />
+                  Delete
                 </button>
               </div>
             </div>
