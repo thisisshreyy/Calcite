@@ -289,7 +289,7 @@ function Expenses() {
                       : "border border-[#2B213A] bg-[#1C1628] text-[#B9AEC9] hover:bg-[#251C32]"
                   }`}
                 >
-                  ?{value.toLocaleString("en-IN")}
+                  ₹{value.toLocaleString("en-IN")}
                 </button>
               ))}
             </div>
@@ -298,7 +298,7 @@ function Expenses() {
           <div className="mt-6 grid gap-3 md:grid-cols-[180px_1fr_auto]">
             <div className="relative">
               <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#777080]">
-                ?
+                ₹
               </span>
               <input
                 value={amount}
@@ -520,7 +520,7 @@ function Expenses() {
                   className="flex items-center justify-between rounded-xl bg-[#1C1628] px-4 py-3"
                 >
                   <span className="text-sm text-[#F4F0FF]">
-                    ?{value.toLocaleString("en-IN")}
+                    ₹{value.toLocaleString("en-IN")}
                   </span>
 
                   <button
