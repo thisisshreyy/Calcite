@@ -11,7 +11,7 @@ export default defineConfig({
     tailwindcss(),
     VitePWA({
       registerType: "autoUpdate",
-      includeAssets: ["favicon.svg"],
+      includeAssets: ["Calcite-logo.png"],
       manifest: {
         name: "Calcite",
         short_name: "Calcite",
@@ -24,14 +24,10 @@ export default defineConfig({
         scope: "/Calcite/",
         icons: [
           {
-            src: "/Calcite/pwa-192.svg",
-            sizes: "192x192",
-            type: "image/svg+xml",
-          },
-          {
-            src: "/Calcite/pwa-512.svg",
-            sizes: "512x512",
-            type: "image/svg+xml",
+            src: "/Calcite/Calcite-logo.png",
+            sizes: "1024x1024",
+            type: "image/png",
+            purpose: "any maskable",
           },
         ],
       },
