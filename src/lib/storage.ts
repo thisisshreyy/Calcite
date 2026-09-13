@@ -1,11 +1,8 @@
 import { todayKey } from "@/lib/dates"
 import type {
   CalciteState,
-  Habit,
   HabitDayLog,
-  Note,
   NoteFolder,
-  Quote,
   TaskFolder,
 } from "@/types"
 
