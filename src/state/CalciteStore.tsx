@@ -5,6 +5,7 @@ import {
   useEffect,
   useMemo,
   useReducer,
+  useState,
   type Dispatch,
   type ReactNode,
 } from "react"
@@ -650,10 +651,28 @@ function createInitialState() {
 export function CalciteProvider({ children }: { children: ReactNode }) {
  const initialState = useMemo(() => createInitialState(), [])
   const [state, dispatch] = useReducer(calciteReducer, initialState)
+  const [, setCurrentDate] = useState(todayKey())
 
   useEffect(() => {
     saveState(state)
   }, [state])
+
+  useEffect(() => {
+    const checkForNewDay = () => {
+      const nextDate = todayKey()
+      setCurrentDate((currentDate) => {
+        if (currentDate === nextDate) {
+          return currentDate
+        }
+
+        dispatch({ type: "habit/ensure-date", date: nextDate })
+        return nextDate
+      })
+    }
+
+    const interval = window.setInterval(checkForNewDay, 30_000)
+    return () => window.clearInterval(interval)
+  }, [])
 
   return (
     <CalciteContext.Provider value={{ state, dispatch }}>
