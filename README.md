@@ -1,5 +1,7 @@
 # Calcite
 
+**🚀 Live App:** https://thisisshreyy.github.io/Calcite/
+
 Calcite is a local-first personal productivity workspace for today, tasks, habits, notes, expenses, analytics and saved quotes.
 
 ## V1 features
