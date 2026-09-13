@@ -159,7 +159,7 @@ function renderMarkdown(markdown: string) {
             checked
               ? "border-[#9B6CFF] bg-[#9B6CFF] text-[#0B0812]"
               : "border-[#4A3C5B]"
-          }">${checked ? "?" : ""}</span><span class="${
+          }">${checked ? "✓" : ""}</span><span class="${
             checked ? "text-[#777080] line-through" : ""
           }">${inlineMarkdown(taskText)}</span></li>`,
         )
@@ -247,8 +247,6 @@ function Notes() {
       return
     }
 
-    const id = `note_${Date.now()}`
-
     dispatch({
       type: "note/create",
       input: {
@@ -260,14 +258,6 @@ function Notes() {
 
     setQuery("")
     setSelectedNoteId(null)
-
-    window.setTimeout(() => {
-      const created = state.notes.find((note) => note.id === id)
-
-      if (created) {
-        setSelectedNoteId(created.id)
-      }
-    }, 0)
   }
 
   const createFolder = (event: FormEvent<HTMLFormElement>) => {
