@@ -41,9 +41,11 @@ function Sidebar() {
   return (
     <aside className="hidden h-screen w-[280px] shrink-0 border-r border-[#2B213A] bg-[#0D0A14] md:flex md:flex-col">
       <div className="flex items-center gap-3 px-7 py-7">
-        <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-[#3A2B50] bg-[#171021] text-[#C7A6FF]">
-          ◈
-        </div>
+        <img
+          src={`${import.meta.env.BASE_URL}Calcite-logo.png`}
+          alt="Calcite"
+          className="h-10 w-10 rounded-xl object-cover"
+        />
 
         <span className="text-lg font-semibold tracking-wide text-[#F4F0FF]">
           CALCITE
