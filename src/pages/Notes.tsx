@@ -72,7 +72,7 @@ function renderMarkdown(markdown: string) {
     )
 
     html = html.replace(
-      /[(.+?)\]\((https?:\/\/[^\s)]+)\)/g,
+      /\[(.+?)\]\((https?:\/\/[^\s)]+)\)/g,
       '<a href="$2" target="_blank" rel="noreferrer" class="text-[#C7A6FF] underline underline-offset-2">$1</a>',
     )
 
@@ -150,9 +150,9 @@ function renderMarkdown(markdown: string) {
 
       const content = unorderedMatch?.[1] ?? orderedMatch?.[1] ?? ""
 
-      if (/^[[ xX]\]\s+/.test(content)) {
-        const checked = /^[[xX]\]/.test(content)
-        const taskText = content.replace(/^[[ xX]\]\s+/, "")
+      if (/^\[[ xX]\]\s+/.test(content)) {
+        const checked = /^\[[xX]\]/.test(content)
+        const taskText = content.replace(/^\[[ xX]\]\s+/, "")
 
         output.push(
           `<li class="list-none -ml-5 flex items-start gap-2"><span class="mt-1 flex h-4 w-4 shrink-0 items-center justify-center rounded border ${
