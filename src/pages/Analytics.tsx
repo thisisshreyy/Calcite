@@ -69,7 +69,6 @@ function Analytics() {
 
   const currentStreak = getCurrentStreak(state)
   const longestStreak = getLongestStreak(state)
-  const maxWeeklyScore = Math.max(
     100,
     ...weeklyScores.map((day) => day.score),
   )
