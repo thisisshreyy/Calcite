@@ -55,6 +55,7 @@ type QuoteInput = {
 export type CalciteAction =
   | { type: "habit/create"; input: HabitInput }
   | { type: "habit/update"; id: string; input: HabitInput }
+  | { type: "habit/delete"; id: string }
   | { type: "habit/set-active"; id: string; active: boolean }
   | { type: "habit/toggle-completion"; id: string; date?: string }
   | { type: "habit/ensure-date"; date: string }
@@ -329,6 +330,14 @@ export function calciteReducer(
       }
 
       return syncTodayLogForHabit(nextState, updatedHabit, previous)
+    }
+
+    case "habit/delete": {
+      return {
+        ...state,
+        habits: state.habits.filter((habit) => habit.id !== action.id),
+        habitLogs: state.habitLogs.filter((log) => log.habitId !== action.id),
+      }
     }
 
     case "habit/set-active": {
