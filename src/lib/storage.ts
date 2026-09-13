@@ -1,4 +1,3 @@
-import { todayKey } from "@/lib/dates"
 import type {
   CalciteState,
   HabitDayLog,
