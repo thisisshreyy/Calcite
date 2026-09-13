@@ -2,6 +2,7 @@ import type {
   CalciteState,
   HabitDayLog,
   NoteFolder,
+  Quote,
   TaskFolder,
 } from "@/types"
 
