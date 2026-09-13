@@ -31,7 +31,7 @@ function Settings() {
       if (!parsed || typeof parsed !== "object" || !Array.isArray(parsed.tasks) || !Array.isArray(parsed.habits)) {
         throw new Error("Invalid backup")
       }
-      localStorage.setItem("calcite_state", JSON.stringify(parsed))
+      localStorage.setItem("calcite:v0.2", JSON.stringify(parsed))
       setMessage("Backup restored. Reloading…")
       setTimeout(() => window.location.reload(), 400)
     } catch {
