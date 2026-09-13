@@ -69,9 +69,6 @@ function Analytics() {
 
   const currentStreak = getCurrentStreak(state)
   const longestStreak = getLongestStreak(state)
-    100,
-    ...weeklyScores.map((day) => day.score),
-  )
 
   return (
     <main className="flex-1 overflow-y-auto">
