@@ -1,6 +1,7 @@
 import { useRef, useState } from "react"
 import { Download, RotateCcw, Upload } from "lucide-react"
 
+import { CALCITE_STORAGE_KEY } from "@/lib/storage"
 import { useCalcite } from "@/state/CalciteStore"
 
 function Settings() {
@@ -9,7 +10,19 @@ function Settings() {
   const [message, setMessage] = useState("")
 
   const exportData = () => {
-    const blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" })
+    const backup = {
+      version: 1,
+      exportedAt: new Date().toISOString(),
+      state,
+      expenses: JSON.parse(localStorage.getItem("calcite_expenses") ?? "[]"),
+      expenseCategories: JSON.parse(
+        localStorage.getItem("calcite_expense_categories") ?? "[]",
+      ),
+      expenseAmounts: JSON.parse(
+        localStorage.getItem("calcite_expense_amounts") ?? "[]",
+      ),
+    }
+    const blob = new Blob([JSON.stringify(backup, null, 2)], { type: "application/json" })
     const url = URL.createObjectURL(blob)
     const anchor = document.createElement("a")
     anchor.href = url
@@ -28,10 +41,41 @@ function Settings() {
   const importData = async (file: File) => {
     try {
       const parsed = JSON.parse(await file.text())
-      if (!parsed || typeof parsed !== "object" || !Array.isArray(parsed.tasks) || !Array.isArray(parsed.habits)) {
+      const backup =
+        parsed &&
+        typeof parsed === "object" &&
+        "state" in parsed &&
+        parsed.state &&
+        typeof parsed.state === "object"
+          ? parsed
+          : { state: parsed }
+
+      if (
+        !backup.state ||
+        !Array.isArray(backup.state.tasks) ||
+        !Array.isArray(backup.state.habits)
+      ) {
         throw new Error("Invalid backup")
       }
-      localStorage.setItem("calcite:v0.2", JSON.stringify(parsed))
+
+      localStorage.setItem(CALCITE_STORAGE_KEY, JSON.stringify(backup.state))
+
+      if (Array.isArray(backup.expenses)) {
+        localStorage.setItem("calcite_expenses", JSON.stringify(backup.expenses))
+      }
+      if (Array.isArray(backup.expenseCategories)) {
+        localStorage.setItem(
+          "calcite_expense_categories",
+          JSON.stringify(backup.expenseCategories),
+        )
+      }
+      if (Array.isArray(backup.expenseAmounts)) {
+        localStorage.setItem(
+          "calcite_expense_amounts",
+          JSON.stringify(backup.expenseAmounts),
+        )
+      }
+
       setMessage("Backup restored. Reloading…")
       setTimeout(() => window.location.reload(), 400)
     } catch {
