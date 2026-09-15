@@ -189,17 +189,21 @@ export function getLongestStreak(state: CalciteState): number {
   const dates = Array.from(new Set(state.habitLogs.map((log) => log.date))).sort()
   let current = 0
   let longest = 0
+  let previousDate: string | null = null
 
   dates.forEach((date) => {
     const day = getDayScore(state, date)
+    const isConsecutive =
+      previousDate !== null && addDays(previousDate, 1) === date
 
     if (day.possible > 0 && day.score === 100) {
-      current += 1
+      current = isConsecutive ? current + 1 : 1
       longest = Math.max(longest, current)
-      return
+    } else {
+      current = 0
     }
 
-    current = 0
+    previousDate = date
   })
 
   return longest
