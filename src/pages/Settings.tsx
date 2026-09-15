@@ -4,6 +4,15 @@ import { Download, RotateCcw, Upload } from "lucide-react"
 import { CALCITE_STORAGE_KEY } from "@/lib/storage"
 import { useCalcite } from "@/state/CalciteStore"
 
+const readJson = <T,>(key: string, fallback: T): T => {
+  try {
+    const raw = localStorage.getItem(key)
+    return raw ? (JSON.parse(raw) as T) : fallback
+  } catch {
+    return fallback
+  }
+}
+
 function Settings() {
   const { state } = useCalcite()
   const fileRef = useRef<HTMLInputElement>(null)
@@ -14,13 +23,9 @@ function Settings() {
       version: 2,
       exportedAt: new Date().toISOString(),
       state,
-      expenses: JSON.parse(localStorage.getItem("calcite_expenses") ?? "[]"),
-      expenseCategories: JSON.parse(
-        localStorage.getItem("calcite_expense_categories") ?? "[]",
-      ),
-      expenseAmounts: JSON.parse(
-        localStorage.getItem("calcite_expense_amounts") ?? "[]",
-      ),
+      expenses: readJson<unknown[]>("calcite_expenses", []),
+      expenseCategories: readJson<unknown[]>("calcite_expense_categories", []),
+      expenseAmounts: readJson<unknown[]>("calcite_expense_amounts", []),
     }
     const blob = new Blob([JSON.stringify(backup, null, 2)], { type: "application/json" })
     const url = URL.createObjectURL(blob)
@@ -66,6 +71,12 @@ function Settings() {
       }
 
       localStorage.setItem(CALCITE_STORAGE_KEY, JSON.stringify(backup.state))
+
+      ;[
+        "calcite_expenses",
+        "calcite_expense_categories",
+        "calcite_expense_amounts",
+      ].forEach((key) => localStorage.removeItem(key))
 
       if (Array.isArray(backup.expenses)) {
         localStorage.setItem("calcite_expenses", JSON.stringify(backup.expenses))
