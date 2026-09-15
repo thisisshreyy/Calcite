@@ -11,7 +11,7 @@ function Settings() {
 
   const exportData = () => {
     const backup = {
-      version: 1,
+      version: 2,
       exportedAt: new Date().toISOString(),
       state,
       expenses: JSON.parse(localStorage.getItem("calcite_expenses") ?? "[]"),
@@ -34,7 +34,14 @@ function Settings() {
 
   const resetData = () => {
     if (!window.confirm("Reset all Calcite data on this device? This cannot be undone.")) return
-    localStorage.clear()
+
+    ;[
+      CALCITE_STORAGE_KEY,
+      "calcite_expenses",
+      "calcite_expense_categories",
+      "calcite_expense_amounts",
+    ].forEach((key) => localStorage.removeItem(key))
+
     window.location.reload()
   }
 
