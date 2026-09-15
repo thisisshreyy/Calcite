@@ -61,7 +61,7 @@ function Expenses() {
     load<number[]>(AMOUNTS_KEY, DEFAULT_AMOUNTS),
   )
 
-  const [category, setCategory] = useState("Food")
+  const [category, setCategory] = useState(() => categories[0] ?? "Other")
   const [amount, setAmount] = useState("")
   const [note, setNote] = useState("")
   const [showCategoryManager, setShowCategoryManager] = useState(false)
