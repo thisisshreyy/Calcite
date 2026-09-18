@@ -9,6 +9,8 @@ import type {
 export const CALCITE_STORAGE_KEY = "calcite:v0.2"
 export const CALCITE_STORAGE_VERSION = 2
 
+const LEGACY_STORAGE_KEY = "calcite:v0.1"
+
 const nowIso = () => new Date().toISOString()
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
@@ -49,6 +51,34 @@ export function createSeedState(): CalciteState {
   }
 }
 
+const normalizeState = (parsed: Record<string, unknown>, seed: CalciteState): CalciteState => ({
+  version: CALCITE_STORAGE_VERSION,
+  habits: Array.isArray(parsed.habits)
+    ? (parsed.habits as CalciteState["habits"])
+    : seed.habits,
+  habitLogs: Array.isArray(parsed.habitLogs)
+    ? (parsed.habitLogs as HabitDayLog[])
+    : seed.habitLogs,
+  taskFolders: Array.isArray(parsed.taskFolders)
+    ? (parsed.taskFolders as TaskFolder[])
+    : seed.taskFolders,
+  tasks: Array.isArray(parsed.tasks)
+    ? (parsed.tasks as CalciteState["tasks"])
+    : seed.tasks,
+  noteFolders: Array.isArray(parsed.noteFolders)
+    ? (parsed.noteFolders as NoteFolder[])
+    : seed.noteFolders,
+  notes: Array.isArray(parsed.notes)
+    ? (parsed.notes as CalciteState["notes"])
+    : seed.notes,
+  quotes: Array.isArray(parsed.quotes)
+    ? (parsed.quotes as Quote[])
+    : seed.quotes,
+  settings: isRecord(parsed.settings)
+    ? (parsed.settings as CalciteState["settings"])
+    : seed.settings,
+})
+
 export function loadState(): CalciteState {
   const seed = createSeedState()
 
@@ -56,7 +86,16 @@ export function loadState(): CalciteState {
     return seed
   }
 
-  const raw = localStorage.getItem(CALCITE_STORAGE_KEY)
+  let raw = localStorage.getItem(CALCITE_STORAGE_KEY)
+
+  if (!raw) {
+    raw = localStorage.getItem(LEGACY_STORAGE_KEY)
+
+    if (raw) {
+      localStorage.setItem(CALCITE_STORAGE_KEY, raw)
+      localStorage.removeItem(LEGACY_STORAGE_KEY)
+    }
+  }
 
   if (!raw) {
     return seed
@@ -69,23 +108,13 @@ export function loadState(): CalciteState {
       return seed
     }
 
-    return {
-      version: CALCITE_STORAGE_VERSION,
-      habits: Array.isArray(parsed.habits) ? (parsed.habits as CalciteState["habits"]) : seed.habits,
-      habitLogs: Array.isArray(parsed.habitLogs)
-        ? (parsed.habitLogs as HabitDayLog[])
-        : seed.habitLogs,
-      taskFolders: Array.isArray(parsed.taskFolders)
-        ? (parsed.taskFolders as TaskFolder[])
-        : seed.taskFolders,
-      tasks: Array.isArray(parsed.tasks) ? (parsed.tasks as CalciteState["tasks"]) : seed.tasks,
-      noteFolders: Array.isArray(parsed.noteFolders)
-        ? (parsed.noteFolders as NoteFolder[])
-        : seed.noteFolders,
-      notes: Array.isArray(parsed.notes) ? (parsed.notes as CalciteState["notes"]) : seed.notes,
-      quotes: Array.isArray(parsed.quotes) ? (parsed.quotes as Quote[]) : seed.quotes,
-      settings: isRecord(parsed.settings) ? parsed.settings as CalciteState["settings"] : seed.settings,
+    const state = normalizeState(parsed, seed)
+
+    if (parsed.version !== CALCITE_STORAGE_VERSION) {
+      localStorage.setItem(CALCITE_STORAGE_KEY, JSON.stringify(state))
     }
+
+    return state
   } catch {
     return seed
   }
