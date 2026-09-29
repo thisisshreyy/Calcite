@@ -3,7 +3,9 @@ import {
   BarChart3,
   CheckCircle2,
   Flame,
+  ListChecks,
   Target,
+  Wallet,
   TrendingDown,
   TrendingUp,
 } from "lucide-react"
@@ -11,8 +13,10 @@ import {
 import {
   compareAverages,
   getCurrentStreak,
+  getExpenseAnalytics,
   getHabitConsistency,
   getLongestStreak,
+  getTaskAnalytics,
   getMonthlyScores,
   getWeeklyScores,
   summarizeScores,
@@ -68,7 +72,20 @@ function Analytics() {
   )
 
   const currentStreak = getCurrentStreak(state)
+
+  const expenseAnalytics = useMemo(
+    () => getExpenseAnalytics(state, monthlyScores.map((day) => day.date)),
+    [monthlyScores, state],
+  )
+
+  const taskAnalytics = useMemo(
+    () => getTaskAnalytics(state, today),
+    [state, today],
+  )
   const longestStreak = getLongestStreak(state)
+
+  const formatMoney = (value: number) =>
+    `₹${Math.round(value).toLocaleString("en-IN")}`
 
   return (
     <main className="flex-1 overflow-y-auto">
@@ -194,6 +211,82 @@ function Analytics() {
               ) : (
                 <p className={`text-sm ${mutedClass}`}>No habits to analyze yet.</p>
               )}
+            </div>
+          </div>
+        </section>
+
+        <section className="mt-4 grid gap-4 lg:grid-cols-2">
+          <div className={cardClass}>
+            <div className="flex items-center gap-2">
+              <Wallet size={18} className="text-[#9B6CFF]" />
+              <div>
+                <h2 className={`font-medium ${primaryClass}`}>Spending this month</h2>
+                <p className={`mt-1 text-xs ${mutedClass}`}>Recorded expenses in the current month</p>
+              </div>
+            </div>
+
+            <div className="mt-5 grid grid-cols-2 gap-4 sm:grid-cols-4">
+              <Metric label="Total" value={formatMoney(expenseAnalytics.total)} />
+              <Metric label="Daily avg." value={formatMoney(expenseAnalytics.averageDaily)} />
+              <Metric label="Largest" value={formatMoney(expenseAnalytics.largest)} />
+              <Metric label="Entries" value={String(expenseAnalytics.count)} />
+            </div>
+
+            {expenseAnalytics.categoryTotals.length > 0 ? (
+              <div className="mt-6 space-y-3">
+                {expenseAnalytics.categoryTotals.slice(0, 5).map(({ category, amount }) => (
+                  <div key={category}>
+                    <div className="flex justify-between text-xs">
+                      <span className={mutedClass}>{category}</span>
+                      <span className={primaryClass}>{formatMoney(amount)}</span>
+                    </div>
+                    <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-[#0F0B17]">
+                      <div
+                        className="h-full rounded-full bg-[#9B6CFF]"
+                        style={{
+                          width: `${Math.min((amount / Math.max(expenseAnalytics.total, 1)) * 100, 100)}%`,
+                        }}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className={`mt-6 text-sm ${mutedClass}`}>No expenses recorded this month.</p>
+            )}
+          </div>
+
+          <div className={cardClass}>
+            <div className="flex items-center gap-2">
+              <ListChecks size={18} className="text-[#9B6CFF]" />
+              <div>
+                <h2 className={`font-medium ${primaryClass}`}>Task overview</h2>
+                <p className={`mt-1 text-xs ${mutedClass}`}>Current workload and this week's activity</p>
+              </div>
+            </div>
+
+            <div className="mt-5 grid grid-cols-2 gap-4 sm:grid-cols-4">
+              <Metric label="Completion" value={`${taskAnalytics.completionPercentage}%`} />
+              <Metric label="Pending" value={String(taskAnalytics.pending)} />
+              <Metric label="Overdue" value={String(taskAnalytics.overdue)} />
+              <Metric label="Done this week" value={String(taskAnalytics.completedThisWeek)} />
+            </div>
+
+            <div className="mt-6 rounded-xl border border-[#2B213A] bg-[#0F0B17] p-4">
+              <div className="flex items-center justify-between">
+                <span className={`text-sm ${mutedClass}`}>Tasks due this week</span>
+                <span className={`font-semibold ${primaryClass}`}>
+                  {taskAnalytics.dueThisWeek}
+                </span>
+              </div>
+              <div className="mt-3 h-2 overflow-hidden rounded-full bg-[#21172F]">
+                <div
+                  className="h-full rounded-full bg-[#9B6CFF]"
+                  style={{
+                    width: `${Math.min(taskAnalytics.completionPercentage, 100)}%`,
+                  }}
+                />
+              </div>
             </div>
           </div>
         </section>
