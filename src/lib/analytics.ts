@@ -2,6 +2,26 @@ import { addDays, formatDisplayDate, getMonthDays, getWeekDays, todayKey } from 
 import { isHabitScheduledForDate } from "@/lib/habits"
 import type { CalciteState, Habit, HabitDayLog } from "@/types"
 
+export type ExpenseAnalytics = {
+  total: number
+  averageDaily: number
+  largest: number
+  count: number
+  categoryTotals: { category: string; amount: number }[]
+  dailyTotals: { date: string; amount: number }[]
+}
+
+export type TaskAnalytics = {
+  total: number
+  completed: number
+  pending: number
+  overdue: number
+  completionPercentage: number
+  completedThisWeek: number
+  dueThisWeek: number
+}
+
+
 export type HabitTodayItem = {
   habit: Habit
   log?: HabitDayLog
@@ -211,4 +231,92 @@ export function getLongestStreak(state: CalciteState): number {
 
 export function compareAverages(current: DayScore[], previous: DayScore[]): number {
   return summarizeScores(current).average - summarizeScores(previous).average
+}
+
+const localDateKey = (date: Date) => {
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, "0")
+  const day = String(date.getDate()).padStart(2, "0")
+  return `${year}-${month}-${day}`
+}
+
+const isInDateRange = (date: string, start: string, end: string) =>
+  date >= start && date <= end
+
+export function getExpenseAnalytics(
+  state: CalciteState,
+  dates = getMonthDays(),
+): ExpenseAnalytics {
+  const start = dates[0] ?? todayKey()
+  const end = dates.at(-1) ?? todayKey()
+  const expenses = state.expenses.filter((expense) => {
+    const date = localDateKey(new Date(expense.date))
+    return isInDateRange(date, start, end)
+  })
+
+  const categoryMap = new Map<string, number>()
+  const dailyMap = new Map<string, number>()
+
+  for (const expense of expenses) {
+    const date = localDateKey(new Date(expense.date))
+    categoryMap.set(
+      expense.category,
+      (categoryMap.get(expense.category) ?? 0) + expense.amount,
+    )
+    dailyMap.set(date, (dailyMap.get(date) ?? 0) + expense.amount)
+  }
+
+  const total = expenses.reduce((sum, expense) => sum + expense.amount, 0)
+
+  return {
+    total,
+    averageDaily: dates.length > 0 ? total / dates.length : 0,
+    largest: expenses.reduce(
+      (largest, expense) => Math.max(largest, expense.amount),
+      0,
+    ),
+    count: expenses.length,
+    categoryTotals: [...categoryMap.entries()]
+      .map(([category, amount]) => ({ category, amount }))
+      .sort((a, b) => b.amount - a.amount),
+    dailyTotals: [...dailyMap.entries()]
+      .map(([date, amount]) => ({ date, amount }))
+      .sort((a, b) => a.date.localeCompare(b.date)),
+  }
+}
+
+export function getTaskAnalytics(
+  state: CalciteState,
+  date = todayKey(),
+): TaskAnalytics {
+  const weekDays = getWeekDays(date)
+  const weekStart = weekDays[0] ?? date
+  const weekEnd = weekDays.at(-1) ?? date
+  const completed = state.tasks.filter((task) => task.completed).length
+  const pending = state.tasks.length - completed
+  const overdue = state.tasks.filter(
+    (task) => !task.completed && Boolean(task.dueDate) && task.dueDate! < date,
+  ).length
+  const completedThisWeek = state.tasks.filter(
+    (task) =>
+      task.completed &&
+      Boolean(task.completedAt) &&
+      isInDateRange(localDateKey(new Date(task.completedAt!)), weekStart, weekEnd),
+  ).length
+  const dueThisWeek = state.tasks.filter(
+    (task) =>
+      Boolean(task.dueDate) &&
+      isInDateRange(task.dueDate!, weekStart, weekEnd),
+  ).length
+
+  return {
+    total: state.tasks.length,
+    completed,
+    pending,
+    overdue,
+    completionPercentage:
+      state.tasks.length > 0 ? Math.round((completed / state.tasks.length) * 100) : 0,
+    completedThisWeek,
+    dueThisWeek,
+  }
 }
