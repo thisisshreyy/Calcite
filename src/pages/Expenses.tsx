@@ -1,65 +1,20 @@
 import { useMemo, useState } from "react"
+
+import { useCalcite } from "@/state/CalciteStore"
 import {
   ArrowDown,
-CircleDollarSign,
+  CircleDollarSign,
   Plus,
   Settings2,
   Trash2,
   X,
 } from "lucide-react"
 
-type Expense = {
-  id: string
-  amount: number
-  category: string
-  note: string
-  date: string
-}
-
-const DEFAULT_CATEGORIES = [
-  "Food",
-  "Transport",
-  "Stationery",
-  "College",
-  "Shopping",
-  "Entertainment",
-  "Bills",
-  "Health",
-  "Travel",
-  "Other",
-]
-
-const DEFAULT_AMOUNTS = [20, 50, 100, 200, 500, 1000]
-
-const EXPENSES_KEY = "calcite_expenses"
-const CATEGORIES_KEY = "calcite_expense_categories"
-const AMOUNTS_KEY = "calcite_expense_amounts"
-
-function load<T>(key: string, fallback: T): T {
-  try {
-    const saved = localStorage.getItem(key)
-    return saved ? JSON.parse(saved) : fallback
-  } catch {
-    return fallback
-  }
-}
-
-function save(key: string, value: unknown) {
-  localStorage.setItem(key, JSON.stringify(value))
-}
-
 function Expenses() {
-  const [expenses, setExpenses] = useState<Expense[]>(() =>
-    load<Expense[]>(EXPENSES_KEY, []),
-  )
-
-  const [categories, setCategories] = useState<string[]>(() =>
-    load<string[]>(CATEGORIES_KEY, DEFAULT_CATEGORIES),
-  )
-
-  const [amounts, setAmounts] = useState<number[]>(() =>
-    load<number[]>(AMOUNTS_KEY, DEFAULT_AMOUNTS),
-  )
+  const { state, dispatch } = useCalcite()
+  const expenses = state.expenses
+  const categories = state.expenseCategories
+  const amounts = state.expenseAmounts
 
   const [category, setCategory] = useState(() => categories[0] ?? "Other")
   const [amount, setAmount] = useState("")
@@ -69,11 +24,6 @@ function Expenses() {
   const [newCategory, setNewCategory] = useState("")
   const [newAmount, setNewAmount] = useState("")
 
-  const persistExpenses = (next: Expense[]) => {
-    setExpenses(next)
-    save(EXPENSES_KEY, next)
-  }
-
   const addExpense = () => {
     const numericAmount = Number(amount)
 
@@ -81,21 +31,20 @@ function Expenses() {
       return
     }
 
-    const expense: Expense = {
-      id: `expense_${Date.now()}`,
-      amount: numericAmount,
-      category,
-      note: note.trim(),
-      date: new Date().toISOString(),
-    }
-
-    persistExpenses([expense, ...expenses])
+    dispatch({
+      type: "expense/create",
+      input: {
+        amount: numericAmount,
+        category,
+        note: note.trim(),
+      },
+    })
     setAmount("")
     setNote("")
   }
 
   const removeExpense = (id: string) => {
-    persistExpenses(expenses.filter((expense) => expense.id !== id))
+    dispatch({ type: "expense/delete", id })
   }
 
   const addCategory = () => {
@@ -105,9 +54,7 @@ function Expenses() {
       return
     }
 
-    const next = [...categories, value]
-    setCategories(next)
-    save(CATEGORIES_KEY, next)
+    dispatch({ type: "expense-category/add", value })
     setCategory(value)
     setNewCategory("")
   }
@@ -117,12 +64,10 @@ function Expenses() {
       return
     }
 
-    const next = categories.filter((item) => item !== value)
-    setCategories(next)
-    save(CATEGORIES_KEY, next)
+    dispatch({ type: "expense-category/delete", value })
 
     if (category === value) {
-      setCategory(next[0])
+      setCategory(categories.find((item) => item !== value) ?? "Other")
     }
   }
 
@@ -133,16 +78,12 @@ function Expenses() {
       return
     }
 
-    const next = [...amounts, value].sort((a, b) => a - b)
-    setAmounts(next)
-    save(AMOUNTS_KEY, next)
+    dispatch({ type: "expense-amount/add", value })
     setNewAmount("")
   }
 
   const deleteAmountPreset = (value: number) => {
-    const next = amounts.filter((item) => item !== value)
-    setAmounts(next)
-    save(AMOUNTS_KEY, next)
+    dispatch({ type: "expense-amount/delete", value })
   }
 
   const total = useMemo(
