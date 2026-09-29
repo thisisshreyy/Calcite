@@ -14,7 +14,7 @@ import { useCalcite } from "@/state/CalciteStore"
 
 const itemClass = ({ isActive }: { isActive: boolean }) =>
   [
-    "flex min-w-0 flex-1 flex-col items-center justify-center gap-1 rounded-xl px-2 py-2.5 text-[11px] transition",
+    "flex min-w-0 flex-1 flex-col items-center justify-center gap-1 rounded-xl px-1.5 py-1.5 text-[11px] transition",
     isActive
       ? "bg-[#21172F] text-[#F4F0FF]"
       : "text-[#9A91AA] hover:bg-[#18121F] hover:text-[#F4F0FF]",
