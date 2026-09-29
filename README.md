@@ -24,9 +24,9 @@ React 19 + TypeScript + Vite + Tailwind CSS v4 + React Router + Recharts + Frame
 
 ## Data model
 
-V1 is intentionally local-first. Productivity data is stored in browser localStorage, so Calcite works without a backend or account and remains usable offline after installation. Use Settings → Export backup before clearing browser data or moving devices.
+V1 is intentionally local-first. Productivity data is stored in browser localStorage, so Calcite works without a backend or account and remains usable offline after installation. Core workspace data, including expenses and expense presets, is stored in one versioned Calcite state. Use Settings → Export backup before clearing browser data or moving devices.
 
-Cloud sync/authentication can be added as a V2 without changing the core UI.
+Older Calcite installations automatically migrate legacy expense storage into the versioned state on first load. Cloud sync/authentication can be added as a V2 without changing the core UI.
 
 ## Run locally
 
