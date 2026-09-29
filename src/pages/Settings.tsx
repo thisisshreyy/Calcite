@@ -4,15 +4,6 @@ import { Download, RotateCcw, Upload } from "lucide-react"
 import { CALCITE_STORAGE_KEY } from "@/lib/storage"
 import { useCalcite } from "@/state/CalciteStore"
 
-const readJson = <T,>(key: string, fallback: T): T => {
-  try {
-    const raw = localStorage.getItem(key)
-    return raw ? (JSON.parse(raw) as T) : fallback
-  } catch {
-    return fallback
-  }
-}
-
 function Settings() {
   const { state } = useCalcite()
   const fileRef = useRef<HTMLInputElement>(null)
@@ -20,12 +11,9 @@ function Settings() {
 
   const exportData = () => {
     const backup = {
-      version: 2,
+      version: state.version,
       exportedAt: new Date().toISOString(),
       state,
-      expenses: readJson<unknown[]>("calcite_expenses", []),
-      expenseCategories: readJson<unknown[]>("calcite_expense_categories", []),
-      expenseAmounts: readJson<unknown[]>("calcite_expense_amounts", []),
     }
     const blob = new Blob([JSON.stringify(backup, null, 2)], { type: "application/json" })
     const url = URL.createObjectURL(blob)
@@ -52,47 +40,61 @@ function Settings() {
 
   const importData = async (file: File) => {
     try {
-      const parsed = JSON.parse(await file.text())
-      const backup =
-        parsed &&
-        typeof parsed === "object" &&
-        "state" in parsed &&
-        parsed.state &&
-        typeof parsed.state === "object"
-          ? parsed
-          : { state: parsed }
+      const parsed: unknown = JSON.parse(await file.text())
+
+      if (!parsed || typeof parsed !== "object") {
+        throw new Error("Invalid backup")
+      }
+
+      const root = parsed as Record<string, unknown>
+      const candidate =
+        root.state && typeof root.state === "object"
+          ? (root.state as Record<string, unknown>)
+          : root
+
+      const requiredArrays = [
+        "habits",
+        "habitLogs",
+        "taskFolders",
+        "tasks",
+        "noteFolders",
+        "notes",
+        "quotes",
+      ]
 
       if (
-        !backup.state ||
-        !Array.isArray(backup.state.tasks) ||
-        !Array.isArray(backup.state.habits)
+        !requiredArrays.every((key) => Array.isArray(candidate[key])) ||
+        !candidate.settings ||
+        typeof candidate.settings !== "object"
       ) {
         throw new Error("Invalid backup")
       }
 
-      localStorage.setItem(CALCITE_STORAGE_KEY, JSON.stringify(backup.state))
+      const importedState = {
+        ...candidate,
+        expenses: Array.isArray(candidate.expenses)
+          ? candidate.expenses
+          : Array.isArray(root.expenses)
+            ? root.expenses
+            : [],
+        expenseCategories: Array.isArray(candidate.expenseCategories)
+          ? candidate.expenseCategories
+          : Array.isArray(root.expenseCategories)
+            ? root.expenseCategories
+            : undefined,
+        expenseAmounts: Array.isArray(candidate.expenseAmounts)
+          ? candidate.expenseAmounts
+          : Array.isArray(root.expenseAmounts)
+            ? root.expenseAmounts
+            : undefined,
+      }
 
+      localStorage.setItem(CALCITE_STORAGE_KEY, JSON.stringify(importedState))
       ;[
         "calcite_expenses",
         "calcite_expense_categories",
         "calcite_expense_amounts",
       ].forEach((key) => localStorage.removeItem(key))
-
-      if (Array.isArray(backup.expenses)) {
-        localStorage.setItem("calcite_expenses", JSON.stringify(backup.expenses))
-      }
-      if (Array.isArray(backup.expenseCategories)) {
-        localStorage.setItem(
-          "calcite_expense_categories",
-          JSON.stringify(backup.expenseCategories),
-        )
-      }
-      if (Array.isArray(backup.expenseAmounts)) {
-        localStorage.setItem(
-          "calcite_expense_amounts",
-          JSON.stringify(backup.expenseAmounts),
-        )
-      }
 
       setMessage("Backup restored. Reloading…")
       setTimeout(() => window.location.reload(), 400)
