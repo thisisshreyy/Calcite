@@ -77,6 +77,14 @@ export type Quote = {
   updatedAt: string
 }
 
+export type Expense = {
+  id: string
+  amount: number
+  category: string
+  note: string
+  date: string
+}
+
 export type AppSettings = {
   lastDashboardQuoteId?: string
 }
@@ -90,5 +98,8 @@ export type CalciteState = {
   noteFolders: NoteFolder[]
   notes: Note[]
   quotes: Quote[]
+  expenses: Expense[]
+  expenseCategories: string[]
+  expenseAmounts: number[]
   settings: AppSettings
 }
