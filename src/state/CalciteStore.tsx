@@ -17,6 +17,7 @@ import { loadState, saveState } from "@/lib/storage"
 import type {
   AppSettings,
   CalciteState,
+  Expense,
   Habit,
   HabitDayLog,
   HabitRecurrence,
@@ -76,6 +77,12 @@ export type CalciteAction =
   | { type: "quote/update"; id: string; input: QuoteInput }
   | { type: "quote/delete"; id: string }
   | { type: "quote/shuffle-dashboard" }
+  | { type: "expense/create"; input: Omit<Expense, "id" | "date"> }
+  | { type: "expense/delete"; id: string }
+  | { type: "expense-category/add"; value: string }
+  | { type: "expense-category/delete"; value: string }
+  | { type: "expense-amount/add"; value: number }
+  | { type: "expense-amount/delete"; value: number }
   | { type: "settings/update"; settings: Partial<AppSettings> }
 
 type CalciteContextValue = {
@@ -638,6 +645,78 @@ export function calciteReducer(
 
     case "quote/shuffle-dashboard":
       return shuffleDashboardQuote(state)
+
+    case "expense/create": {
+      const amount = Number(action.input.amount)
+
+      if (!Number.isFinite(amount) || amount <= 0) {
+        return state
+      }
+
+      const expense: Expense = {
+        id: createId("expense"),
+        amount,
+        category: cleanName(action.input.category, "Other"),
+        note: action.input.note.trim(),
+        date: new Date().toISOString(),
+      }
+
+      return {
+        ...state,
+        expenses: [expense, ...state.expenses],
+      }
+    }
+
+    case "expense/delete":
+      return {
+        ...state,
+        expenses: state.expenses.filter((expense) => expense.id !== action.id),
+      }
+
+    case "expense-category/add": {
+      const value = cleanName(action.value, "")
+
+      if (!value || state.expenseCategories.includes(value)) {
+        return state
+      }
+
+      return {
+        ...state,
+        expenseCategories: [...state.expenseCategories, value],
+      }
+    }
+
+    case "expense-category/delete": {
+      if (state.expenseCategories.length <= 1) {
+        return state
+      }
+
+      const next = state.expenseCategories.filter((item) => item !== action.value)
+
+      return {
+        ...state,
+        expenseCategories: next,
+      }
+    }
+
+    case "expense-amount/add": {
+      const value = Number(action.value)
+
+      if (!Number.isFinite(value) || value <= 0 || state.expenseAmounts.includes(value)) {
+        return state
+      }
+
+      return {
+        ...state,
+        expenseAmounts: [...state.expenseAmounts, value].sort((a, b) => a - b),
+      }
+    }
+
+    case "expense-amount/delete":
+      return {
+        ...state,
+        expenseAmounts: state.expenseAmounts.filter((value) => value !== action.value),
+      }
 
     case "settings/update":
       return {
