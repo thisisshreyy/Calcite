@@ -32,7 +32,7 @@ function App() {
   return (
     <CalciteProvider>
       <HashRouter>
-        <div className="flex min-h-screen bg-[#0B0812] pb-20 text-[#F4F0FF] md:pb-0">
+        <div className="flex min-h-screen bg-[#0B0812] pb-28 text-[#F4F0FF] md:pb-0">
           <Sidebar />
 
           <Suspense fallback={<PageLoader />}>
