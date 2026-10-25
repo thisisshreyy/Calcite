@@ -1,4 +1,4 @@
-import { Target } from "lucide-react"
+﻿import { Target } from "lucide-react"
 
 import type { DayScore } from "@/lib/analytics"
 

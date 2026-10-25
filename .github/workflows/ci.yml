@@ -15,6 +15,13 @@ jobs:
         with:
           node-version: 22
           cache: npm
-      - run: npm ci
-      - run: npm run lint
-      - run: npm run build
+      - name: Install frontend dependencies
+        run: npm ci
+      - name: Install server dependencies
+        run: npm --prefix server ci
+      - name: Lint frontend
+        run: npm run lint
+      - name: Build frontend
+        run: npm run build
+      - name: Build server
+        run: npm run server:build

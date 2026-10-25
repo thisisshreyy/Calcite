@@ -1,4 +1,4 @@
-import { getWeekday } from "@/lib/dates"
+﻿import { getWeekday } from "@/lib/dates"
 import type { Habit, HabitRecurrence, Weekday } from "@/types"
 
 const weekdayLabels: Record<Weekday, string> = {

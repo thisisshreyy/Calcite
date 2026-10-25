@@ -11,6 +11,7 @@ LayoutDashboard,
 import { NavLink } from "react-router-dom"
 
 import { useCalcite } from "../../state/CalciteStore"
+import { GoogleAuthButton } from "../auth/GoogleAuthButton"
 
 function Sidebar() {
   const { state } = useCalcite()
@@ -155,6 +156,10 @@ function Sidebar() {
             <span>Settings</span>
           </NavLink>
         </nav>
+
+        <div className="mt-3 border-t border-[#21192C] pt-3">
+          <GoogleAuthButton compact showDemoOption={false} />
+        </div>
       </div>
     </aside>
   )

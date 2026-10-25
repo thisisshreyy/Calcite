@@ -84,6 +84,7 @@ export type CalciteAction =
   | { type: "expense-amount/add"; value: number }
   | { type: "expense-amount/delete"; value: number }
   | { type: "settings/update"; settings: Partial<AppSettings> }
+  | { type: "state/hydrate"; state: CalciteState }
 
 type CalciteContextValue = {
   state: CalciteState
@@ -726,6 +727,9 @@ export function calciteReducer(
           ...action.settings,
         },
       }
+
+    case "state/hydrate":
+      return ensureHabitLogsForDate(action.state, todayKey())
 
     default:
       return state

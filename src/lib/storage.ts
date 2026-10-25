@@ -220,3 +220,72 @@ export function saveState(state: CalciteState): void {
     }),
   )
 }
+
+export type UnifiedWorkspace = {
+  version: number
+  state: CalciteState
+  expenses: unknown[]
+  expenseCategories: unknown[]
+  expenseAmounts: unknown[]
+  updatedAt?: string
+}
+
+export function getUnifiedWorkspace(state?: CalciteState): UnifiedWorkspace {
+  const currentState = state ?? loadState()
+  let expenses: unknown[] = []
+  let expenseCategories: unknown[] = []
+  let expenseAmounts: unknown[] = []
+
+  if (typeof localStorage !== "undefined") {
+    try {
+      const expRaw = localStorage.getItem("calcite_expenses")
+      if (expRaw) expenses = JSON.parse(expRaw)
+    } catch {
+      // ignore
+    }
+    try {
+      const catRaw = localStorage.getItem("calcite_expense_categories")
+      if (catRaw) expenseCategories = JSON.parse(catRaw)
+    } catch {
+      // ignore
+    }
+    try {
+      const amtRaw = localStorage.getItem("calcite_expense_amounts")
+      if (amtRaw) expenseAmounts = JSON.parse(amtRaw)
+    } catch {
+      // ignore
+    }
+  }
+
+  return {
+    version: CALCITE_STORAGE_VERSION,
+    state: currentState,
+    expenses,
+    expenseCategories,
+    expenseAmounts,
+    updatedAt: new Date().toISOString(),
+  }
+}
+
+export function applyUnifiedWorkspace(workspace: UnifiedWorkspace): void {
+  if (typeof localStorage === "undefined") return
+
+  if (workspace.state) {
+    saveState(workspace.state)
+  }
+  if (Array.isArray(workspace.expenses)) {
+    localStorage.setItem("calcite_expenses", JSON.stringify(workspace.expenses))
+  }
+  if (Array.isArray(workspace.expenseCategories)) {
+    localStorage.setItem(
+      "calcite_expense_categories",
+      JSON.stringify(workspace.expenseCategories),
+    )
+  }
+  if (Array.isArray(workspace.expenseAmounts)) {
+    localStorage.setItem(
+      "calcite_expense_amounts",
+      JSON.stringify(workspace.expenseAmounts),
+    )
+  }
+}

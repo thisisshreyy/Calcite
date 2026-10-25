@@ -4,8 +4,20 @@ import path from "path"
 import { VitePWA } from "vite-plugin-pwa"
 import tailwindcss from "@tailwindcss/vite"
 
+const basePath =
+  process.env.BASE_PATH ||
+  (process.env.GITHUB_ACTIONS || process.env.VITE_GITHUB_PAGES ? "/Calcite/" : "/")
+
 export default defineConfig({
-  base: "/Calcite/",
+  base: basePath,
+  server: {
+    proxy: {
+      "/api": {
+        target: process.env.VITE_API_PROXY || "http://localhost:3000",
+        changeOrigin: true,
+      },
+    },
+  },
   plugins: [
     react(),
     tailwindcss(),
@@ -15,16 +27,15 @@ export default defineConfig({
       manifest: {
         name: "Calcite",
         short_name: "Calcite",
-        description:
-          "A personal productivity and second-brain workspace.",
+        description: "A personal productivity and second-brain workspace.",
         theme_color: "#0B0812",
         background_color: "#0B0812",
         display: "standalone",
-        start_url: "/Calcite/",
-        scope: "/Calcite/",
+        start_url: basePath,
+        scope: basePath,
         icons: [
           {
-            src: "/Calcite/Calcite-logo.png",
+            src: `${basePath}Calcite-logo.png`.replace(/\/\//g, "/"),
             sizes: "1024x1024",
             type: "image/png",
             purpose: "any maskable",

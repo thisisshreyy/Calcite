@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react"
+﻿import { useMemo, useState } from "react"
 
 import { useCalcite } from "@/state/CalciteStore"
 import {
@@ -125,7 +125,7 @@ function Expenses() {
   }, [expenses])
 
   const formatMoney = (value: number) =>
-    `₹${value.toLocaleString("en-IN", {
+    `â‚¹${value.toLocaleString("en-IN", {
       maximumFractionDigits: 0,
     })}`
 
@@ -230,7 +230,7 @@ function Expenses() {
                       : "border border-[#2B213A] bg-[#1C1628] text-[#B9AEC9] hover:bg-[#251C32]"
                   }`}
                 >
-                  ₹{value.toLocaleString("en-IN")}
+                  â‚¹{value.toLocaleString("en-IN")}
                 </button>
               ))}
             </div>
@@ -239,7 +239,7 @@ function Expenses() {
           <div className="mt-6 grid gap-3 md:grid-cols-[180px_1fr_auto]">
             <div className="relative">
               <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#777080]">
-                ₹
+                â‚¹
               </span>
               <input
                 value={amount}
@@ -254,7 +254,7 @@ function Expenses() {
             <input
               value={note}
               onChange={(event) => setNote(event.target.value)}
-              placeholder="Optional note — e.g. college canteen"
+              placeholder="Optional note â€” e.g. college canteen"
               className="rounded-xl border border-[#2B213A] bg-[#0F0B16] px-4 py-3 text-[#F4F0FF] outline-none placeholder:text-[#5F586A] focus:border-[#9B6CFF]"
             />
 
@@ -297,7 +297,7 @@ function Expenses() {
                       </p>
 
                       <p className="mt-1 truncate text-sm text-[#777080]">
-                        {expense.note || "No note"} ·{" "}
+                        {expense.note || "No note"} Â·{" "}
                         {new Date(expense.date).toLocaleDateString("en-IN")}
                       </p>
                     </div>
@@ -461,7 +461,7 @@ function Expenses() {
                   className="flex items-center justify-between rounded-xl bg-[#1C1628] px-4 py-3"
                 >
                   <span className="text-sm text-[#F4F0FF]">
-                    ₹{value.toLocaleString("en-IN")}
+                    â‚¹{value.toLocaleString("en-IN")}
                   </span>
 
                   <button

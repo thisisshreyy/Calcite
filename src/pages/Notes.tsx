@@ -11,6 +11,7 @@ import {
 } from "lucide-react"
 
 import { useCalcite } from "@/state/CalciteStore"
+import { MarkdownPreview } from "@/lib/markdown"
 import type { Note } from "@/types"
 
 const inputClass =
@@ -21,185 +22,6 @@ const buttonClass =
 
 const dangerButtonClass =
   "inline-flex items-center justify-center gap-2 rounded-lg border border-[#3A2433] bg-[#21131D] px-3 py-2 text-sm text-[#FFB4D8] transition hover:border-[#FF7AB8] hover:bg-[#2A1724]"
-
-function escapeHtml(value: string) {
-  return value
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;")
-}
-
-function renderMarkdown(markdown: string) {
-  const lines = markdown.split("\n")
-  const output: string[] = []
-
-  let inCodeBlock = false
-  let codeLines: string[] = []
-  let inList = false
-  let listType: "ul" | "ol" | null = null
-
-  const closeList = () => {
-    if (inList && listType) {
-      output.push(`</${listType}>`)
-      inList = false
-      listType = null
-    }
-  }
-
-  const inlineMarkdown = (value: string) => {
-    let html = escapeHtml(value)
-
-    html = html.replace(
-      /`([^`]+)`/g,
-      '<code class="rounded bg-[#21172F] px-1.5 py-0.5 text-[#C7A6FF]">$1</code>',
-    )
-
-    html = html.replace(
-      /\*\*(.+?)\*\*/g,
-      '<strong class="font-semibold text-[#F4F0FF]">$1</strong>',
-    )
-
-    html = html.replace(
-      /~~(.+?)~~/g,
-      '<del class="text-[#777080]">$1</del>',
-    )
-
-    html = html.replace(
-      /\*(.+?)\*/g,
-      '<em class="italic text-[#C7A6FF]">$1</em>',
-    )
-
-    html = html.replace(
-      /\[(.+?)\]\((https?:\/\/[^\s)]+)\)/g,
-      '<a href="$2" target="_blank" rel="noreferrer" class="text-[#C7A6FF] underline underline-offset-2">$1</a>',
-    )
-
-    return html
-  }
-
-  for (const line of lines) {
-    if (line.trim().startsWith("```")) {
-      if (inCodeBlock) {
-        output.push(
-          `<pre class="my-4 overflow-x-auto rounded-xl border border-[#2B213A] bg-[#0B0812] p-4 text-sm text-[#C7A6FF]"><code>${escapeHtml(
-            codeLines.join("\n"),
-          )}</code></pre>`,
-        )
-        codeLines = []
-        inCodeBlock = false
-      } else {
-        closeList()
-        inCodeBlock = true
-      }
-
-      continue
-    }
-
-    if (inCodeBlock) {
-      codeLines.push(line)
-      continue
-    }
-
-    if (!line.trim()) {
-      closeList()
-      output.push('<div class="h-3"></div>')
-      continue
-    }
-
-    const headingMatch = line.match(/^(#{1,6})\s+(.+)$/)
-
-    if (headingMatch) {
-      closeList()
-
-      const level = headingMatch[1].length
-      const sizes: Record<number, string> = {
-        1: "text-3xl",
-        2: "text-2xl",
-        3: "text-xl",
-        4: "text-lg",
-        5: "text-base",
-        6: "text-sm",
-      }
-
-      output.push(
-        `<h${level} class="${sizes[level]} mb-3 mt-5 font-semibold text-[#F4F0FF]">${inlineMarkdown(
-          headingMatch[2],
-        )}</h${level}>`,
-      )
-      continue
-    }
-
-    const unorderedMatch = line.match(/^[-*]\s+(.+)$/)
-    const orderedMatch = line.match(/^\d+\.\s+(.+)$/)
-
-    if (unorderedMatch || orderedMatch) {
-      const nextType = unorderedMatch ? "ul" : "ol"
-
-      if (!inList || listType !== nextType) {
-        closeList()
-        listType = nextType
-        inList = true
-        output.push(
-          `<${nextType} class="my-3 space-y-2 pl-6 ${
-            nextType === "ul" ? "list-disc" : "list-decimal"
-          }">`,
-        )
-      }
-
-      const content = unorderedMatch?.[1] ?? orderedMatch?.[1] ?? ""
-
-      if (/^\[[ xX]\]\s+/.test(content)) {
-        const checked = /^\[[xX]\]/.test(content)
-        const taskText = content.replace(/^\[[ xX]\]\s+/, "")
-
-        output.push(
-          `<li class="list-none -ml-5 flex items-start gap-2"><span class="mt-1 flex h-4 w-4 shrink-0 items-center justify-center rounded border ${
-            checked
-              ? "border-[#9B6CFF] bg-[#9B6CFF] text-[#0B0812]"
-              : "border-[#4A3C5B]"
-          }">${checked ? "✓" : ""}</span><span class="${
-            checked ? "text-[#777080] line-through" : ""
-          }">${inlineMarkdown(taskText)}</span></li>`,
-        )
-      } else {
-        output.push(`<li>${inlineMarkdown(content)}</li>`)
-      }
-
-      continue
-    }
-
-    if (line.startsWith(">")) {
-      closeList()
-
-      output.push(
-        `<blockquote class="my-4 border-l-2 border-[#9B6CFF] pl-4 text-[#9A91AA]">${inlineMarkdown(
-          line.replace(/^>\s?/, ""),
-        )}</blockquote>`,
-      )
-      continue
-    }
-
-    closeList()
-
-    output.push(
-      `<p class="my-2 leading-7 text-[#C4BDCE]">${inlineMarkdown(line)}</p>`,
-    )
-  }
-
-  if (inCodeBlock) {
-    output.push(
-      `<pre class="my-4 overflow-x-auto rounded-xl border border-[#2B213A] bg-[#0B0812] p-4 text-sm text-[#C7A6FF]"><code>${escapeHtml(
-        codeLines.join("\n"),
-      )}</code></pre>`,
-    )
-  }
-
-  closeList()
-
-  return output.join("")
-}
 
 function Notes() {
   const { state, dispatch } = useCalcite()
@@ -653,12 +475,9 @@ function NoteEditor({
             Preview
           </div>
 
-          <article
-            className="p-5 text-sm"
-            dangerouslySetInnerHTML={{
-              __html: renderMarkdown(content),
-            }}
-          />
+          <div className="p-4">
+            <MarkdownPreview content={content} />
+          </div>
         </div>
       </div>
     </div>

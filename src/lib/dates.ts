@@ -1,4 +1,4 @@
-import type { Weekday } from "@/types"
+﻿import type { Weekday } from "@/types"
 
 const pad = (value: number) => String(value).padStart(2, "0")
 

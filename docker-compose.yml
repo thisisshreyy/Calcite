@@ -1,0 +1,22 @@
+services:
+  calcite:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: calcite-app
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - DATA_DIR=/data
+      - JWT_SECRET=calcite_jwt_secret_key_change_in_production
+      # Optional: Set your Google OAuth Client ID here or configure it directly in Settings UI
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID:-}
+    volumes:
+      - calcite-data:/data
+
+volumes:
+  calcite-data:
+    driver: local

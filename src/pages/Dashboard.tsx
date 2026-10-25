@@ -1,4 +1,4 @@
-import HabitsCard from "@/components/dashboard/HabitsCard"
+﻿import HabitsCard from "@/components/dashboard/HabitsCard"
 import QuoteCard from "@/components/dashboard/QuoteCard"
 import ScoreCard from "@/components/dashboard/ScoreCard"
 import TasksCard from "@/components/dashboard/TasksCard"

@@ -1,4 +1,4 @@
-/* eslint-disable react-hooks/set-state-in-effect */
+﻿/* eslint-disable react-hooks/set-state-in-effect */
 import { useEffect, useMemo, useState, type FormEvent } from "react"
 import {
   Check,
