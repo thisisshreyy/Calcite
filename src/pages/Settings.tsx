@@ -1,11 +1,13 @@
 import { useRef, useState } from "react"
 import {
+  Archive,
   Cloud,
   CloudDownload,
   CloudUpload,
   Download,
   Loader2,
   RotateCcw,
+  Smartphone,
   Upload,
 } from "lucide-react"
 
@@ -252,6 +254,46 @@ function Settings() {
                 {message}
               </p>
             )}
+          </div>
+
+          {/* Android Mobile App */}
+          <div className="rounded-2xl border border-[#2B213A] bg-[#14101D] p-6">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#21172F] text-[#9B6CFF]">
+                <Smartphone size={20} />
+              </div>
+              <div>
+                <h2 className="text-lg font-medium text-[#F4F0FF]">Android Mobile App</h2>
+                <p className="text-xs text-[#777080]">Install Calcite natively on your Android device</p>
+              </div>
+            </div>
+
+            <p className="mt-4 text-sm text-[#9A91AA]">
+              Download the standalone package or install directly via your browser. All data saves offline and syncs with your Gmail account.
+            </p>
+
+            <div className="mt-5 grid gap-3 sm:grid-cols-2">
+              <a
+                href="https://github.com/thisisshreyy/Calcite/releases/download/v1.0.0-apk/Calcite.apk"
+                target="_blank"
+                rel="noreferrer"
+                className="flex items-center justify-center gap-2 rounded-xl bg-[#9B6CFF] px-4 py-3 text-sm font-medium text-white transition hover:bg-[#8654ea]"
+              >
+                <Download size={17} /> Download APK (GitHub Release)
+              </a>
+              <a
+                href="https://github.com/thisisshreyy/Calcite/releases/tag/v1.0.0-apk"
+                target="_blank"
+                rel="noreferrer"
+                className="flex items-center justify-center gap-2 rounded-xl border border-[#2B213A] bg-[#1C1628] px-4 py-3 text-sm font-medium text-[#F4F0FF] transition hover:border-[#9B6CFF]"
+              >
+                <Smartphone size={17} /> View Releases & Notes
+              </a>
+            </div>
+
+            <div className="mt-4 rounded-xl border border-[#211A2B] bg-[#0E0A16] p-3 text-xs text-[#777080]">
+              <span className="font-semibold text-[#C7A6FF]">💡 1-Tap Instant Install:</span> On mobile Chrome, you can also tap the browser menu (⋮) → <span className="text-[#F4F0FF]">"Install app"</span> to add Calcite straight to your home screen with zero download waiting!
+            </div>
           </div>
 
           {/* Workspace Statistics */}
