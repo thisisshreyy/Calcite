@@ -6,7 +6,7 @@ import tailwindcss from "@tailwindcss/vite"
 
 const basePath =
   process.env.BASE_PATH ||
-  (process.env.GITHUB_ACTIONS || process.env.VITE_GITHUB_PAGES ? "/Calcite/" : "/")
+  (process.env.VITE_GITHUB_PAGES ? "/Calcite/" : "./")
 
 export default defineConfig({
   base: basePath,

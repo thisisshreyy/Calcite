@@ -3,6 +3,7 @@ import { HashRouter, Routes, Route } from "react-router-dom"
 
 import { ErrorBoundary } from "./components/common/ErrorBoundary"
 import { CommandPalette } from "./components/common/CommandPalette"
+import { NativeMobileHandler } from "./components/common/NativeMobileHandler"
 import MobileNav from "./components/layout/MobileNav"
 import Sidebar from "./components/layout/Sidebar"
 import { CalciteProvider } from "./state/CalciteStore"
@@ -37,6 +38,7 @@ function App() {
       <CalciteProvider>
         <AuthProvider>
           <HashRouter>
+            <NativeMobileHandler />
             <div className="flex min-h-screen bg-[#0B0812] pb-28 text-[#F4F0FF] md:pb-0">
               <Sidebar />
               <CommandPalette />

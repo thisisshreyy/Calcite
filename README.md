@@ -1,4 +1,4 @@
-﻿# Calcite
+# Calcite
 
 **🚀 Live App:** https://thisisshreyy.github.io/Calcite/
 
@@ -13,10 +13,13 @@ Calcite is a local-first personal productivity workspace for daily focus, tasks,
 - **Task Management**: Folders/lists, priorities (high, medium, low), due dates, and inline completion toggling.
 - **Habit Tracking**: Daily, weekday, or custom-day recurrence with historical point snapshotting.
 - **Markdown Notes**: Multi-folder note hierarchy with a secure virtual DOM Markdown previewer (tables, checklists, code blocks, quotes).
-- **Expense Tracker**: INR totals, categorized expenses, and customizable quick-amount presets.
-- **Productivity Analytics**: Recharts visualizations for weekly/monthly scores, consecutive streaks, and habit consistency rates.
-- **Quote Library**: Curated and custom quotes with dashboard shuffle.
-- **Google Sign-In & Cloud Sync**: Sign in with Gmail to back up and sync your workspace across devices, while continuing to save locally for zero-latency offline use.
+- **Pomodoro Focus Timer**: 25/5/15-minute cycles with Web Audio completion chime and task binding.
+- **Yearly Habit Heatmap**: 52-week GitHub-style consistency grid with hover statistics.
+- **Routines & Rest Days**: Filter habits by Morning/Afternoon/Evening and mark forgiving Rest Days without breaking streaks.
+- **Quick Command Palette (`Ctrl+K`)**: Instant search and navigation across tasks, notes, habits, and views.
+- **Expense Tracker & Monthly Budget**: INR currency formatting, category breakdown, monthly budget goal, and safe daily spending limit calculation.
+- **Google / Gmail Sign-In & Cloud Sync**: Sign in with your Gmail address to back up and sync your workspace across devices, while continuing to save locally for zero-latency offline use.
+- **Android Native App (APK)**: Standalone Android APK powered by Capacitor with native status bar, offline caching, and hardware back button support.
 - **Settings & Data Portability**: Full JSON backup export/import, safe factory reset, and cloud synchronization controls.
 - **Error Boundary**: Graceful crash recovery with emergency backup export.
 - **PWA Support**: Installable on Android, iOS, and desktop with offline support.
@@ -94,4 +97,27 @@ npm run server:build
 2. Create an **OAuth 2.0 Client ID** (Web application).
 3. Add your authorized JavaScript origins (e.g. `http://localhost:3000`, `http://localhost:5173`, or your production domain).
 4. Supply your Client ID in `docker-compose.yml` (`GOOGLE_CLIENT_ID`) or enter it directly in the app under **Settings → Cloud Account & Sync → Configure Google Client ID**.
-5. *Note:* A built-in Gmail Demo sign-in is also provided for instant testing without needing immediate Google Cloud credentials.
+5. *Note:* A built-in direct Gmail sign-in is also provided for instant testing and sync without needing immediate Google Cloud credentials.
+
+---
+
+## 📱 Android App (APK)
+
+Calcite can be installed on any Android phone as a native application:
+
+### Download APK
+1. Go to the **[Releases](https://github.com/thisisshreyy/Calcite/releases)** page on GitHub.
+2. Download `Calcite.apk` directly to your phone.
+3. Open the APK file and tap **Install** (allow "Install unknown apps" if prompted).
+
+### Automated Cloud Builds
+Every push to `main` triggers GitHub Actions to automatically compile and release the latest `Calcite.apk`. You can also manually trigger builds in the **Actions** tab by selecting **Build Android APK** → **Run workflow**.
+
+### Building APK Locally
+```bash
+# Sync web build to native Android
+npm run android:sync
+
+# Open project in Android Studio
+npm run android:open
+```

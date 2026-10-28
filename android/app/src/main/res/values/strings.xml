@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Calcite</string>
+    <string name="title_activity_main">Calcite</string>
+    <string name="package_name">com.calcite.app</string>
+    <string name="custom_url_scheme">com.calcite.app</string>
+</resources>
