@@ -1,6 +1,7 @@
-﻿import { useMemo, useState, type FormEvent } from "react"
+import { useMemo, useState, type FormEvent } from "react"
 import {
   Check,
+  Coffee,
   Edit3,
   PauseCircle,
   PlayCircle,
@@ -145,10 +146,13 @@ function HabitsCard() {
                       ? `Mark ${item.habit.name} incomplete`
                       : `Mark ${item.habit.name} complete`
                   }
+                  disabled={item.skipped}
                   className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full border transition ${
                     item.completed
                       ? "border-[#9B6CFF] bg-[#9B6CFF] text-[#0B0812]"
-                      : "border-[#4A3C5B] hover:border-[#9B6CFF]"
+                      : item.skipped
+                        ? "border-[#4A3C5B] bg-transparent text-[#777080] cursor-not-allowed"
+                        : "border-[#4A3C5B] hover:border-[#9B6CFF]"
                   }`}
                   onClick={() =>
                     dispatch({
@@ -163,24 +167,53 @@ function HabitsCard() {
                 </button>
 
                 <div>
-                  <p
-                    className={
-                      item.completed
-                        ? "text-sm text-[#777080] line-through"
-                        : "text-sm text-[#F4F0FF]"
-                    }
-                  >
-                    {item.habit.name}
-                  </p>
+                  <div className="flex items-center gap-2">
+                    <p
+                      className={
+                        item.completed
+                          ? "text-sm text-[#777080] line-through"
+                          : item.skipped
+                            ? "text-sm text-[#9A91AA] line-through"
+                            : "text-sm text-[#F4F0FF]"
+                      }
+                    >
+                      {item.habit.name}
+                    </p>
+                    {item.skipped && (
+                      <span className="rounded bg-[#281A3C] px-1.5 py-0.5 text-[9px] font-medium text-[#C7A6FF]">
+                        Rest Day 💤
+                      </span>
+                    )}
+                  </div>
                   <p className="mt-0.5 text-xs text-[#6F687A]">
                     {recurrenceLabel(item.habit.recurrence)}
                   </p>
                 </div>
               </div>
 
-              <span className="text-sm font-medium text-[#C7A6FF]">
-                +{item.points}
-              </span>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() =>
+                    dispatch({
+                      type: "habit/toggle-skip",
+                      id: item.habit.id,
+                      date,
+                    })
+                  }
+                  title={item.skipped ? "Cancel rest day" : "Take rest day (preserves streak)"}
+                  className={`rounded-lg p-1.5 transition ${
+                    item.skipped
+                      ? "bg-[#281A3C] text-[#C7A6FF]"
+                      : "text-[#6F687A] hover:bg-[#1C1628] hover:text-[#C7A6FF]"
+                  }`}
+                >
+                  <Coffee size={14} />
+                </button>
+                <span className="text-sm font-medium text-[#C7A6FF]">
+                  +{item.points}
+                </span>
+              </div>
             </div>
           ))
         ) : (

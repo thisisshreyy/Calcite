@@ -4,8 +4,9 @@ import {
   CheckSquare,
   CircleDollarSign,
   FileText,
-LayoutDashboard,
+  LayoutDashboard,
   MessageSquareQuote,
+  Search,
   Settings,
 } from "lucide-react"
 import { NavLink } from "react-router-dom"
@@ -51,6 +52,25 @@ function Sidebar() {
         <span className="text-lg font-semibold tracking-wide text-[#F4F0FF]">
           CALCITE
         </span>
+      </div>
+
+      <div className="px-4 pb-3">
+        <button
+          onClick={() => {
+            window.dispatchEvent(
+              new KeyboardEvent("keydown", { key: "k", ctrlKey: true }),
+            )
+          }}
+          className="flex w-full items-center justify-between rounded-xl border border-[#2B213A] bg-[#14101D] px-3.5 py-2 text-xs text-[#777080] transition hover:border-[#9B6CFF] hover:text-[#F4F0FF]"
+        >
+          <span className="flex items-center gap-2">
+            <Search size={14} className="text-[#9B6CFF]" />
+            <span>Search Calcite…</span>
+          </span>
+          <kbd className="rounded bg-[#21172F] px-1.5 py-0.5 text-[10px] text-[#9A91AA]">
+            Ctrl K
+          </kbd>
+        </button>
       </div>
 
       <div className="flex-1 overflow-y-auto px-4 pb-6">

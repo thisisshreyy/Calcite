@@ -1,4 +1,4 @@
-﻿import { useMemo } from "react"
+import { useMemo } from "react"
 import {
   BarChart3,
   CheckCircle2,
@@ -23,6 +23,7 @@ import {
 } from "@/lib/analytics"
 import { addDays, formatDisplayDate, todayKey } from "@/lib/dates"
 import { useCalcite } from "@/state/CalciteStore"
+import { HabitHeatmap } from "@/components/analytics/HabitHeatmap"
 
 const cardClass =
   "rounded-2xl border border-[#2B213A] bg-[#14101D] p-5"
@@ -213,6 +214,10 @@ function Analytics() {
               )}
             </div>
           </div>
+        </section>
+
+        <section className="mt-4">
+          <HabitHeatmap />
         </section>
 
         <section className="mt-4 grid gap-4 lg:grid-cols-2">

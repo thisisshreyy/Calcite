@@ -31,6 +31,7 @@ type HabitInput = {
   name: string
   points: number
   recurrence: HabitRecurrence
+  timeOfDay?: "morning" | "afternoon" | "evening" | "anytime"
 }
 
 type TaskInput = {
@@ -59,6 +60,7 @@ export type CalciteAction =
   | { type: "habit/delete"; id: string }
   | { type: "habit/set-active"; id: string; active: boolean }
   | { type: "habit/toggle-completion"; id: string; date?: string }
+  | { type: "habit/toggle-skip"; id: string; date?: string }
   | { type: "habit/ensure-date"; date: string }
   | { type: "task-folder/create"; name: string }
   | { type: "task-folder/rename"; id: string; name: string }
@@ -248,12 +250,59 @@ const toggleHabitCompletion = (
   const updated: HabitDayLog = {
     ...current,
     completed,
+    skipped: completed ? false : current.skipped,
     pointsSnapshot: current.pointsSnapshot || habit.points,
     habitNameSnapshot: current.habitNameSnapshot || habit.name,
     activeSnapshot: true,
     scheduledSnapshot: true,
     updatedAt: now,
     completedAt: completed ? now : undefined,
+  }
+
+  return {
+    ...state,
+    habitLogs: state.habitLogs.map((log, index) =>
+      index === logIndex ? updated : log,
+    ),
+  }
+}
+
+const toggleHabitSkip = (
+  state: CalciteState,
+  habitId: string,
+  date = todayKey(),
+): CalciteState => {
+  const habit = state.habits.find((item) => item.id === habitId)
+
+  if (!habit || !habit.active || !isHabitScheduledForDate(habit, date)) {
+    return state
+  }
+
+  const logIndex = state.habitLogs.findIndex(
+    (log) => log.habitId === habitId && log.date === date,
+  )
+  const now = new Date().toISOString()
+
+  if (logIndex === -1) {
+    const newLog = createHabitLog(habit, date, false)
+    newLog.skipped = true
+    return {
+      ...state,
+      habitLogs: [...state.habitLogs, newLog],
+    }
+  }
+
+  const current = state.habitLogs[logIndex]
+  const skipped = !current.skipped
+  const updated: HabitDayLog = {
+    ...current,
+    skipped,
+    completed: skipped ? false : current.completed,
+    pointsSnapshot: current.pointsSnapshot || habit.points,
+    habitNameSnapshot: current.habitNameSnapshot || habit.name,
+    activeSnapshot: true,
+    scheduledSnapshot: true,
+    updatedAt: now,
   }
 
   return {
@@ -302,6 +351,7 @@ export function calciteReducer(
         name: cleanName(action.input.name, "New habit"),
         points: cleanPoints(action.input.points),
         recurrence: action.input.recurrence,
+        timeOfDay: action.input.timeOfDay || "anytime",
         active: true,
         createdAt: now,
         updatedAt: now,
@@ -328,6 +378,7 @@ export function calciteReducer(
         name: cleanName(action.input.name, previous.name),
         points: cleanPoints(action.input.points),
         recurrence: action.input.recurrence,
+        timeOfDay: action.input.timeOfDay || previous.timeOfDay || "anytime",
         updatedAt: now,
       }
       const nextState = {
@@ -372,6 +423,9 @@ export function calciteReducer(
 
     case "habit/toggle-completion":
       return toggleHabitCompletion(state, action.id, action.date)
+
+    case "habit/toggle-skip":
+      return toggleHabitSkip(state, action.id, action.date)
 
     case "habit/ensure-date":
       return ensureHabitLogsForDate(state, action.date)

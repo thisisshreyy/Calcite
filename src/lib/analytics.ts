@@ -1,4 +1,4 @@
-﻿import { addDays, formatDisplayDate, getMonthDays, getWeekDays, todayKey } from "@/lib/dates"
+import { addDays, formatDisplayDate, getMonthDays, getWeekDays, todayKey } from "@/lib/dates"
 import { isHabitScheduledForDate } from "@/lib/habits"
 import type { CalciteState, Habit, HabitDayLog } from "@/types"
 
@@ -26,6 +26,7 @@ export type HabitTodayItem = {
   habit: Habit
   log?: HabitDayLog
   completed: boolean
+  skipped?: boolean
   points: number
 }
 
@@ -71,6 +72,7 @@ export function getHabitItemsForDate(
         habit,
         log,
         completed: log?.completed ?? false,
+        skipped: log?.skipped ?? false,
         points: log?.pointsSnapshot ?? habit.points,
       }
     })
@@ -81,11 +83,12 @@ export function getDayScore(state: CalciteState, date = todayKey()): DayScore {
 
   if (date === today) {
     const items = getHabitItemsForDate(state, date)
-    const earned = items.reduce(
+    const activeItems = items.filter((item) => !item.skipped)
+    const earned = activeItems.reduce(
       (total, item) => total + (item.completed ? item.points : 0),
       0,
     )
-    const possible = items.reduce((total, item) => total + item.points, 0)
+    const possible = activeItems.reduce((total, item) => total + item.points, 0)
 
     return {
       date,
@@ -93,17 +96,18 @@ export function getDayScore(state: CalciteState, date = todayKey()): DayScore {
       score: percent(earned, possible),
       earned,
       possible,
-      completed: items.filter((item) => item.completed).length,
+      completed: activeItems.filter((item) => item.completed).length,
       total: items.length,
     }
   }
 
   const logs = logsForDate(state, date)
-  const earned = logs.reduce(
+  const activeLogs = logs.filter((log) => !log.skipped)
+  const earned = activeLogs.reduce(
     (total, log) => total + (log.completed ? log.pointsSnapshot : 0),
     0,
   )
-  const possible = logs.reduce((total, log) => total + log.pointsSnapshot, 0)
+  const possible = activeLogs.reduce((total, log) => total + log.pointsSnapshot, 0)
 
   return {
     date,
@@ -111,7 +115,7 @@ export function getDayScore(state: CalciteState, date = todayKey()): DayScore {
     score: percent(earned, possible),
     earned,
     possible,
-    completed: logs.filter((log) => log.completed).length,
+    completed: activeLogs.filter((log) => log.completed).length,
     total: logs.length,
   }
 }

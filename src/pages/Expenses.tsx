@@ -1,11 +1,13 @@
-﻿import { useMemo, useState } from "react"
+import { useMemo, useState } from "react"
 
 import { useCalcite } from "@/state/CalciteStore"
 import {
   ArrowDown,
   CircleDollarSign,
+  Pencil,
   Plus,
   Settings2,
+  Target,
   Trash2,
   X,
 } from "lucide-react"
@@ -23,6 +25,20 @@ function Expenses() {
   const [showAmountManager, setShowAmountManager] = useState(false)
   const [newCategory, setNewCategory] = useState("")
   const [newAmount, setNewAmount] = useState("")
+  const [isEditingBudget, setIsEditingBudget] = useState(false)
+  const [budgetInput, setBudgetInput] = useState(
+    state.settings.monthlyBudget ? String(state.settings.monthlyBudget) : "",
+  )
+
+  const monthlyBudget = state.settings.monthlyBudget ?? 0
+
+  const handleSaveBudget = () => {
+    const num = Number(budgetInput)
+    if (num > 0) {
+      dispatch({ type: "settings/update", settings: { monthlyBudget: num } })
+    }
+    setIsEditingBudget(false)
+  }
 
   const addExpense = () => {
     const numericAmount = Number(amount)
@@ -125,9 +141,17 @@ function Expenses() {
   }, [expenses])
 
   const formatMoney = (value: number) =>
-    `â‚¹${value.toLocaleString("en-IN", {
+    `₹${value.toLocaleString("en-IN", {
       maximumFractionDigits: 0,
     })}`
+
+  const now = new Date()
+  const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate()
+  const daysLeft = Math.max(1, daysInMonth - now.getDate() + 1)
+  const budgetRemaining = Math.max(0, monthlyBudget - monthTotal)
+  const safeDailySpend = monthlyBudget > 0 ? Math.floor(budgetRemaining / daysLeft) : 0
+  const budgetUsedPercent =
+    monthlyBudget > 0 ? Math.min(100, Math.round((monthTotal / monthlyBudget) * 100)) : 0
 
   return (
     <main className="min-w-0 flex-1 overflow-y-auto pb-24 md:pb-0">
@@ -163,7 +187,7 @@ function Expenses() {
           </div>
         </div>
 
-        <section className="mt-8 grid gap-4 md:grid-cols-3">
+        <section className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <div className="rounded-2xl border border-[#2B213A] bg-[#14101D] p-5">
             <p className="text-sm text-[#777080]">Today</p>
             <p className="mt-2 text-3xl font-semibold text-[#F4F0FF]">
@@ -176,6 +200,76 @@ function Expenses() {
             <p className="mt-2 text-3xl font-semibold text-[#F4F0FF]">
               {formatMoney(monthTotal)}
             </p>
+          </div>
+
+          {/* Monthly Budget Card */}
+          <div className="rounded-2xl border border-[#2B213A] bg-[#14101D] p-5">
+            <div className="flex items-center justify-between">
+              <span className="flex items-center gap-1.5 text-sm text-[#777080]">
+                <Target size={14} className="text-[#9B6CFF]" />
+                <span>Monthly Budget</span>
+              </span>
+              <button
+                onClick={() => setIsEditingBudget(!isEditingBudget)}
+                className="rounded p-1 text-[#777080] hover:text-[#9B6CFF]"
+                title="Edit monthly budget"
+              >
+                <Pencil size={13} />
+              </button>
+            </div>
+
+            {isEditingBudget ? (
+              <div className="mt-2 flex gap-1.5">
+                <input
+                  type="number"
+                  value={budgetInput}
+                  onChange={(e) => setBudgetInput(e.target.value)}
+                  placeholder="Budget in ₹"
+                  className="w-full rounded-lg border border-[#2B213A] bg-[#0F0B17] px-2 py-1 text-xs text-[#F4F0FF] outline-none focus:border-[#9B6CFF]"
+                  autoFocus
+                />
+                <button
+                  onClick={handleSaveBudget}
+                  className="rounded-lg bg-[#9B6CFF] px-2.5 py-1 text-xs font-semibold text-[#0B0812]"
+                >
+                  Save
+                </button>
+              </div>
+            ) : monthlyBudget > 0 ? (
+              <>
+                <p className="mt-2 text-3xl font-semibold text-[#F4F0FF]">
+                  {formatMoney(monthlyBudget)}
+                </p>
+                <div className="mt-2.5">
+                  <div className="h-1.5 w-full overflow-hidden rounded-full bg-[#1F152B]">
+                    <div
+                      className={`h-full rounded-full transition-all ${
+                        budgetUsedPercent > 90
+                          ? "bg-[#FF7AB8]"
+                          : budgetUsedPercent > 70
+                            ? "bg-amber-400"
+                            : "bg-[#9B6CFF]"
+                      }`}
+                      style={{ width: `${budgetUsedPercent}%` }}
+                    />
+                  </div>
+                  <div className="mt-2 flex items-center justify-between text-[11px] text-[#777080]">
+                    <span>{formatMoney(budgetRemaining)} left</span>
+                    <span className="text-[#C7A6FF]">~{formatMoney(safeDailySpend)}/day</span>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <div className="mt-2">
+                <p className="text-xl font-medium text-[#5E566A]">Not set</p>
+                <button
+                  onClick={() => setIsEditingBudget(true)}
+                  className="mt-1 text-xs text-[#9B6CFF] hover:underline"
+                >
+                  + Set monthly target
+                </button>
+              </div>
+            )}
           </div>
 
           <div className="rounded-2xl border border-[#2B213A] bg-[#14101D] p-5">
@@ -230,7 +324,7 @@ function Expenses() {
                       : "border border-[#2B213A] bg-[#1C1628] text-[#B9AEC9] hover:bg-[#251C32]"
                   }`}
                 >
-                  â‚¹{value.toLocaleString("en-IN")}
+                  ₹{value.toLocaleString("en-IN")}
                 </button>
               ))}
             </div>
@@ -239,7 +333,7 @@ function Expenses() {
           <div className="mt-6 grid gap-3 md:grid-cols-[180px_1fr_auto]">
             <div className="relative">
               <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#777080]">
-                â‚¹
+                ₹
               </span>
               <input
                 value={amount}
@@ -254,7 +348,7 @@ function Expenses() {
             <input
               value={note}
               onChange={(event) => setNote(event.target.value)}
-              placeholder="Optional note â€” e.g. college canteen"
+              placeholder="Optional note — e.g. college canteen"
               className="rounded-xl border border-[#2B213A] bg-[#0F0B16] px-4 py-3 text-[#F4F0FF] outline-none placeholder:text-[#5F586A] focus:border-[#9B6CFF]"
             />
 
@@ -297,7 +391,7 @@ function Expenses() {
                       </p>
 
                       <p className="mt-1 truncate text-sm text-[#777080]">
-                        {expense.note || "No note"} Â·{" "}
+                        {expense.note || "No note"} ·{" "}
                         {new Date(expense.date).toLocaleDateString("en-IN")}
                       </p>
                     </div>
@@ -461,7 +555,7 @@ function Expenses() {
                   className="flex items-center justify-between rounded-xl bg-[#1C1628] px-4 py-3"
                 >
                   <span className="text-sm text-[#F4F0FF]">
-                    â‚¹{value.toLocaleString("en-IN")}
+                    ₹{value.toLocaleString("en-IN")}
                   </span>
 
                   <button

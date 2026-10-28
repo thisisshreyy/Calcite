@@ -1,4 +1,4 @@
-﻿export type Weekday = 0 | 1 | 2 | 3 | 4 | 5 | 6
+export type Weekday = 0 | 1 | 2 | 3 | 4 | 5 | 6
 
 export type HabitRecurrence =
   | { type: "daily" }
@@ -10,6 +10,7 @@ export type Habit = {
   name: string
   points: number
   recurrence: HabitRecurrence
+  timeOfDay?: "morning" | "afternoon" | "evening" | "anytime"
   active: boolean
   createdAt: string
   updatedAt: string
@@ -20,6 +21,7 @@ export type HabitDayLog = {
   habitId: string
   date: string
   completed: boolean
+  skipped?: boolean
   pointsSnapshot: number
   habitNameSnapshot: string
   activeSnapshot: boolean
@@ -87,6 +89,10 @@ export type Expense = {
 
 export type AppSettings = {
   lastDashboardQuoteId?: string
+  monthlyBudget?: number
+  pomodoroMinutes?: number
+  shortBreakMinutes?: number
+  longBreakMinutes?: number
 }
 
 export type CalciteState = {
