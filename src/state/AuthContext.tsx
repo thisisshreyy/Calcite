@@ -33,6 +33,8 @@ type AuthContextValue = {
   syncError: string | null
   googleClientId: string
   setGoogleClientId: (id: string) => void
+  customApiUrl: string
+  setCustomApiUrl: (url: string) => void
   loginWithGoogle: (credential: string) => Promise<boolean>
   loginWithDemo: (email?: string, name?: string) => Promise<boolean>
   logout: (clearLocal?: boolean) => void
@@ -45,10 +47,15 @@ const AuthContext = createContext<AuthContextValue | undefined>(undefined)
 const AUTH_TOKEN_KEY = "calcite_auth_token"
 const AUTH_USER_KEY = "calcite_auth_user"
 const GOOGLE_CLIENT_ID_KEY = "calcite_google_client_id"
+const CUSTOM_API_URL_KEY = "calcite_custom_api_url"
 const LAST_SYNCED_KEY = "calcite_last_synced_at"
 
 // Configurable API URL for standalone/static deployment
-const getApiBaseUrl = (): string => {
+export const getApiBaseUrl = (): string => {
+  const custom = localStorage.getItem(CUSTOM_API_URL_KEY)
+  if (custom && custom.trim()) {
+    return custom.trim().replace(/\/+$/, "")
+  }
   if (import.meta.env.VITE_API_URL) {
     return import.meta.env.VITE_API_URL.replace(/\/+$/, "")
   }
@@ -75,6 +82,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       ""
     )
   })
+  const [customApiUrl, setCustomApiUrlState] = useState<string>(() => {
+    return localStorage.getItem(CUSTOM_API_URL_KEY) || ""
+  })
   const [syncStatus, setSyncStatus] = useState<SyncStatus>("idle")
   const [lastSyncedAt, setLastSyncedAt] = useState<string | null>(() => {
     return localStorage.getItem(LAST_SYNCED_KEY)
@@ -91,6 +101,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       localStorage.setItem(GOOGLE_CLIENT_ID_KEY, id)
     } else {
       localStorage.removeItem(GOOGLE_CLIENT_ID_KEY)
+    }
+  }, [])
+
+  const setCustomApiUrl = useCallback((url: string) => {
+    const trimmed = url.trim()
+    setCustomApiUrlState(trimmed)
+    if (trimmed) {
+      localStorage.setItem(CUSTOM_API_URL_KEY, trimmed)
+    } else {
+      localStorage.removeItem(CUSTOM_API_URL_KEY)
     }
   }, [])
 
@@ -380,6 +400,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         syncError,
         googleClientId,
         setGoogleClientId,
+        customApiUrl,
+        setCustomApiUrl,
         loginWithGoogle,
         loginWithDemo,
         logout,

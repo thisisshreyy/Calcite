@@ -1,6 +1,5 @@
 import { useRef, useState } from "react"
 import {
-  Archive,
   Cloud,
   CloudDownload,
   CloudUpload,
@@ -19,7 +18,7 @@ import type { CalciteState } from "@/types"
 
 function Settings() {
   const { state, dispatch } = useCalcite()
-  const { user, syncNow, restoreFromCloud } = useAuth()
+  const { user, syncNow, restoreFromCloud, customApiUrl, setCustomApiUrl } = useAuth()
   const fileRef = useRef<HTMLInputElement>(null)
   const [message, setMessage] = useState("")
   const [isSyncingManual, setIsSyncingManual] = useState(false)
@@ -217,6 +216,29 @@ function Settings() {
                 </div>
               </div>
             )}
+            {/* Custom Backend Cloud URL */}
+            <div className="mt-5 border-t border-[#211A2B] pt-4">
+              <details className="group">
+                <summary className="flex cursor-pointer items-center justify-between text-xs font-medium text-[#777080] transition hover:text-[#C7A6FF]">
+                  <span>Cloud Backend Server URL (for Mobile APK & Multi-Device Sync)</span>
+                  <span className="text-[10px] text-[#5E566A] transition group-open:rotate-180">▼</span>
+                </summary>
+                <div className="mt-3 space-y-2">
+                  <p className="text-xs text-[#6F687A]">
+                    If using the Android APK or GitHub Pages, enter your deployed Render URL (e.g. <code className="text-[#C7A6FF]">https://calcite.onrender.com</code>) so all your devices connect to the same cloud backend.
+                  </p>
+                  <div className="flex gap-2">
+                    <input
+                      type="url"
+                      defaultValue={customApiUrl}
+                      placeholder="https://your-service.onrender.com"
+                      onBlur={(e) => setCustomApiUrl(e.target.value)}
+                      className="flex-1 rounded-xl border border-[#2B213A] bg-[#0E0A16] px-3.5 py-2 text-xs text-[#F4F0FF] outline-none focus:border-[#9B6CFF]"
+                    />
+                  </div>
+                </div>
+              </details>
+            </div>
           </div>
 
           {/* Local Data Portability */}
