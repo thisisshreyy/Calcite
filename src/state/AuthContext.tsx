@@ -13,6 +13,7 @@ import {
   getUnifiedWorkspace,
   type UnifiedWorkspace,
 } from "@/lib/storage"
+import { Capacitor } from "@capacitor/core"
 import { useCalcite } from "./CalciteStore"
 
 export type AuthUser = {
@@ -50,6 +51,8 @@ const GOOGLE_CLIENT_ID_KEY = "calcite_google_client_id"
 const CUSTOM_API_URL_KEY = "calcite_custom_api_url"
 const LAST_SYNCED_KEY = "calcite_last_synced_at"
 
+export const DEFAULT_PRODUCTION_API_URL = "https://calcite.onrender.com"
+
 // Configurable API URL for standalone/static deployment
 export const getApiBaseUrl = (): string => {
   const custom = localStorage.getItem(CUSTOM_API_URL_KEY)
@@ -59,6 +62,30 @@ export const getApiBaseUrl = (): string => {
   if (import.meta.env.VITE_API_URL) {
     return import.meta.env.VITE_API_URL.replace(/\/+$/, "")
   }
+
+  // 1. Android APK (Capacitor native platform) -> ALWAYS connect to live Render backend
+  if (Capacitor.isNativePlatform()) {
+    return DEFAULT_PRODUCTION_API_URL
+  }
+
+  // 2. Local development on PC with active port (e.g. localhost:5173 / localhost:3000)
+  if (
+    typeof window !== "undefined" &&
+    (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") &&
+    window.location.port !== ""
+  ) {
+    return ""
+  }
+
+  // 3. GitHub Pages, friend's phone browser, or any domain outside render.com:
+  if (
+    typeof window !== "undefined" &&
+    !window.location.hostname.includes("onrender.com")
+  ) {
+    return DEFAULT_PRODUCTION_API_URL
+  }
+
+  // 4. Running directly on Render (same origin):
   return ""
 }
 

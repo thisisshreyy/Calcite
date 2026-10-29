@@ -216,22 +216,37 @@ function Settings() {
                 </div>
               </div>
             )}
-            {/* Custom Backend Cloud URL */}
-            <div className="mt-5 border-t border-[#211A2B] pt-4">
+            {/* Cloud Backend Server Status */}
+            <div className="mt-5 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-[#211A2B] bg-[#0E0A16] px-4 py-3 text-xs">
+              <div className="flex items-center gap-2.5">
+                <span className="relative flex h-2.5 w-2.5">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+                  <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-500" />
+                </span>
+                <span className="text-[#9A91AA]">Cloud Backend:</span>
+                <span className="font-mono text-[#F4F0FF]">https://calcite.onrender.com</span>
+              </div>
+              <span className="rounded-full border border-emerald-500/20 bg-emerald-500/10 px-2.5 py-0.5 text-[10px] font-medium text-emerald-400">
+                Live & Connected
+              </span>
+            </div>
+
+            {/* Custom Backend Cloud URL (Advanced Override) */}
+            <div className="mt-3 pt-2">
               <details className="group">
-                <summary className="flex cursor-pointer items-center justify-between text-xs font-medium text-[#777080] transition hover:text-[#C7A6FF]">
-                  <span>Cloud Backend Server URL (for Mobile APK & Multi-Device Sync)</span>
-                  <span className="text-[10px] text-[#5E566A] transition group-open:rotate-180">▼</span>
+                <summary className="flex cursor-pointer items-center justify-between text-[11px] font-medium text-[#5E566A] transition hover:text-[#9A91AA]">
+                  <span>Advanced Server Override (Optional)</span>
+                  <span className="text-[9px] text-[#5E566A] transition group-open:rotate-180">▼</span>
                 </summary>
-                <div className="mt-3 space-y-2">
-                  <p className="text-xs text-[#6F687A]">
-                    If using the Android APK or GitHub Pages, enter your deployed Render URL (e.g. <code className="text-[#C7A6FF]">https://calcite.onrender.com</code>) so all your devices connect to the same cloud backend.
+                <div className="mt-2 space-y-2">
+                  <p className="text-[11px] text-[#6F687A]">
+                    By default, all apps connect to <code className="text-[#C7A6FF]">https://calcite.onrender.com</code>. You only need to change this if using a custom private server.
                   </p>
                   <div className="flex gap-2">
                     <input
                       type="url"
                       defaultValue={customApiUrl}
-                      placeholder="https://your-service.onrender.com"
+                      placeholder="https://calcite.onrender.com"
                       onBlur={(e) => setCustomApiUrl(e.target.value)}
                       className="flex-1 rounded-xl border border-[#2B213A] bg-[#0E0A16] px-3.5 py-2 text-xs text-[#F4F0FF] outline-none focus:border-[#9B6CFF]"
                     />
